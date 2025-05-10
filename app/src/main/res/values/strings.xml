@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">LittleLemon</string>
+    <string name="home_screen_title">Little Lemon</string>
+    <string name="home_screen_subtitle">Chicago</string>
+    <string name="home_screen_description">We are a family owned Mediterranean restaurant,
+        focused on traditional recipes served with a modern twist.</string>
+    <string name="home_screen_hero_image_description">Hero Image</string>
+    <string name="home_screen_section_title">Order for delivery!</string>
 </resources>
