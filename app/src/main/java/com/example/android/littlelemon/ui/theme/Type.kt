@@ -2,9 +2,13 @@ package com.example.android.littlelemon.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.android.littlelemon.R
 
 // Set of Material typography styles to start with
 val Typography = Typography(
@@ -15,6 +19,7 @@ val Typography = Typography(
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     )
+
     /* Other default text styles to override
     titleLarge = TextStyle(
         fontFamily = FontFamily.Default,
@@ -32,3 +37,64 @@ val Typography = Typography(
     )
     */
 )
+
+// Little Lemon TextStyle
+object LittleLemonTextStyle  {
+    val markaziFontFamily = FontFamily(
+        Font(R.font.markazi_text_regular, FontWeight.Normal)
+    )
+
+    val karlaFontFamily = FontFamily(
+        Font(R.font.karla_regular, FontWeight.Normal)
+    )
+
+    val displayTitle = TextStyle(
+        fontFamily = markaziFontFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 64.sp
+    )
+
+    val subTitle = TextStyle(
+        fontFamily = markaziFontFamily,
+        fontWeight = FontWeight.Normal,
+        fontSize = 40.sp
+    )
+
+    val leadText = TextStyle(
+        fontFamily = karlaFontFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 18.sp
+    )
+
+    val sectionTitle = TextStyle(
+        fontFamily = karlaFontFamily,
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = 20.sp
+    )
+
+    val sectionCategories = TextStyle(
+        fontFamily = karlaFontFamily,
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = 16.sp
+    )
+
+    val cardTitle = TextStyle(
+        fontFamily = karlaFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 18.sp
+    )
+
+    val paragraphText = TextStyle(
+        fontFamily = karlaFontFamily,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        lineHeight = 1.5.sp
+    )
+
+    val highLightText = TextStyle(
+        fontFamily = karlaFontFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 16.sp
+    )
+
+}

@@ -1,12 +1,16 @@
 package com.example.android.littlelemon
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -20,6 +24,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,13 +33,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.android.littlelemon.data.Categories
 import com.example.android.littlelemon.data.Dish
 import com.example.android.littlelemon.data.dishes
+import com.example.android.littlelemon.ui.theme.LittleLemonColor
+import com.example.android.littlelemon.ui.theme.LittleLemonTextStyle
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
@@ -52,37 +57,64 @@ fun HomeScreenUpper() {
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
-            .padding(top = 50.dp)
+            .fillMaxHeight(.55f)
+            .background(LittleLemonColor.primary2)
+            .padding(start = 16.dp, end = 16.dp, top = 80.dp)
+
     ){
-        Text(text = stringResource(id = R.string.home_screen_title))
-        Text(text = stringResource(id = R.string.home_screen_subtitle))
+        Text(
+            text = stringResource(id = R.string.home_screen_title),
+            style = LittleLemonTextStyle.displayTitle,
+            color = LittleLemonColor.primary1,
+            modifier = Modifier
+                .offset(y = 10.dp)
+        )
+
+        Text(
+            text = stringResource(id = R.string.home_screen_subtitle),
+            style = LittleLemonTextStyle.subTitle,
+            color = Color.White,
+            modifier = Modifier
+                .offset(y = (-10).dp)
+        )
         Row (
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
         ) {
             Text(
                 text = stringResource(id = R.string.home_screen_description),
+                style = LittleLemonTextStyle.leadText,
+                color = LittleLemonColor.highlight1,
                 modifier = Modifier
                     .padding(end = 16.dp, top = 16.dp)
-                    .height(200.dp)
+                    .height(150.dp)
                     .fillMaxWidth(0.60f)
             )
             Image(
                 painter = painterResource(id = R.drawable.hero_image),
                 contentDescription = stringResource(id = R.string.home_screen_hero_image_description),
                 modifier = Modifier
-                    .height(200.dp)
                     .clip(RoundedCornerShape(20.dp))
             )
         }
-        OutlinedTextField (
-            value = "",
-            onValueChange = {},
-            placeholder = {Text(text = "Search for menu")},
-            leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = "search icon") },
+
+        Surface(
+            shape = RoundedCornerShape(8.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp)
-        )
+                .padding(top = 8.dp, bottom = 8.dp)
+                //.background(LittleLemonColor.highlight1)
+        ) {
+            OutlinedTextField (
+                value = "",
+                onValueChange = {},
+                leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = "search icon") },
+                modifier = Modifier
+                    .background(LittleLemonColor.highlight1)
+            )
+        }
+
     }
 }
 
@@ -96,7 +128,9 @@ fun HomeScreenLower() {
             .padding(24.dp)
     ) {
         Text(
-            text = stringResource(id = R.string.home_screen_section_title),
+            text = stringResource(id = R.string.home_screen_section_title).uppercase(),
+            style = LittleLemonTextStyle.sectionTitle,
+            color = Color.Black
         )
         LazyRow {
             items(Categories) { category ->
@@ -120,7 +154,7 @@ fun HomeScreenLower() {
 fun MenuCategory(category: String) {
     Button(
         onClick = {},
-        colors = ButtonDefaults.buttonColors(containerColor  = Color.DarkGray),
+        colors = ButtonDefaults.buttonColors(containerColor  = LittleLemonColor.highlight2),
         shape = RoundedCornerShape(40),
         modifier = Modifier
             .padding(5.dp)
@@ -143,9 +177,10 @@ fun MenuDish(dish: Dish) {
                 .padding(8.dp)
         ) {
             Column {
-                Text(text = dish.name, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                Text(text = dish.name, style = LittleLemonTextStyle.cardTitle)
                 Text(
                     text = dish.description,
+                    style = LittleLemonTextStyle.leadText,
                     maxLines = 2,
                     color = Color.Gray,
                     modifier = Modifier
@@ -153,7 +188,9 @@ fun MenuDish(dish: Dish) {
                         .fillMaxWidth(.75f)
                 )
                 Text(
-                    text = dish.price, color = Color.Gray, fontWeight = FontWeight.Bold
+                    text = dish.price,
+                    color = LittleLemonColor.highlight2,
+                    style = LittleLemonTextStyle.highLightText
                 )
             }
             Image(

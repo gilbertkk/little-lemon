@@ -1,6 +1,5 @@
 package com.example.android.littlelemon.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -12,15 +11,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
+    /*
     primary = Purple80,
     secondary = PurpleGrey80,
     tertiary = Pink80
+    */
+    primary = LittleLemonColor.primary2,
+    secondary = LittleLemonColor.secondary2,
+    tertiary = LittleLemonColor.highlight2
 )
 
 private val LightColorScheme = lightColorScheme(
+    /*
     primary = Purple40,
     secondary = PurpleGrey40,
     tertiary = Pink40
+    */
+    primary = LittleLemonColor.primary1,
+    secondary = LittleLemonColor.secondary1,
+    tertiary = LittleLemonColor.highlight1
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -37,7 +46,7 @@ private val LightColorScheme = lightColorScheme(
 fun LittleLemonTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

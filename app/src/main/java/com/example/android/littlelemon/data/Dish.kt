@@ -17,7 +17,7 @@ val dishes = listOf<Dish>(
         R.drawable.greek_salad
     ),
     Dish(
-        "Bruschetta",
+        "Brushetta",
         "$5.99",
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ut nulla sed augue ultrices posuere. Ut aliquam purus quis diam tempor condimentum. Curabitur elementum pharetra ipsum nec pretium. Phasellus maximus consequat erat, ut vestibulum urna porta eu. ",
         R.drawable.bruschetta
