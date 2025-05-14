@@ -161,12 +161,12 @@ fun HomeScreenLower() {
 fun MenuCategory(category: String) {
     Button(
         onClick = {},
-        colors = ButtonDefaults.buttonColors(containerColor  = LittleLemonColor.primary2),
+        colors = ButtonDefaults.buttonColors(containerColor  = Color(0xFFACADAC)),
         shape = RoundedCornerShape(40),
         modifier = Modifier
             .padding(5.dp)
     ) {
-        Text(text=category)
+        Text(text=category, color = Color.Black)
     }
 }
 
