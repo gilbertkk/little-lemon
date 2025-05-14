@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.example.android.littlelemon
 
 import androidx.compose.foundation.Image
@@ -21,9 +23,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,20 +48,19 @@ import com.example.android.littlelemon.ui.theme.LittleLemonTextStyle
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
     Column {
-        HomeScreenUpper()
+        HomeScreenUpper { AppSearchBar() }
         HomeScreenLower()
     }
 
 }
 
 @Composable
-fun HomeScreenUpper() {
+fun HomeScreenUpper(searchBar: @Composable (() -> Unit)? = null) {
     Column (
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(.55f)
             .background(LittleLemonColor.primary2)
             .padding(start = 16.dp, end = 16.dp, top = 80.dp)
 
@@ -81,6 +84,7 @@ fun HomeScreenUpper() {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(bottom = 8.dp)
         ) {
             Text(
                 text = stringResource(id = R.string.home_screen_description),
@@ -98,23 +102,26 @@ fun HomeScreenUpper() {
                     .clip(RoundedCornerShape(20.dp))
             )
         }
+        searchBar?.let { searchBar() }
+    }
+}
 
-        Surface(
-            shape = RoundedCornerShape(8.dp),
+@Composable
+fun AppSearchBar() {
+    Surface(
+        shape = RoundedCornerShape(8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp, bottom = 8.dp)
+        //.background(LittleLemonColor.highlight1)
+    ) {
+        OutlinedTextField (
+            value = "",
+            onValueChange = {},
+            leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = "search icon") },
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp, bottom = 8.dp)
-                //.background(LittleLemonColor.highlight1)
-        ) {
-            OutlinedTextField (
-                value = "",
-                onValueChange = {},
-                leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = "search icon") },
-                modifier = Modifier
-                    .background(LittleLemonColor.highlight1)
-            )
-        }
-
+                .background(LittleLemonColor.highlight1)
+        )
     }
 }
 
