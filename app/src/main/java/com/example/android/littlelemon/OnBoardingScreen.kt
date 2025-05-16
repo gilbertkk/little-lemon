@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,6 +18,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,6 +42,8 @@ fun OnBoardingScreen(paddingValues: PaddingValues) {
             .padding(paddingValues)
             .verticalScroll(rememberScrollState())
     ) {
+        var name by rememberSaveable { mutableStateOf("") }
+        var email by rememberSaveable { mutableStateOf("") }
         HomeScreenUpper()
         Column(
             modifier = Modifier
@@ -51,8 +58,8 @@ fun OnBoardingScreen(paddingValues: PaddingValues) {
                     .padding(top = 8.dp),
             )
             OutlinedTextField (
-                value = "",
-                onValueChange = {},
+                value = name,
+                onValueChange = { name = it },
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -67,8 +74,8 @@ fun OnBoardingScreen(paddingValues: PaddingValues) {
                     .padding(top = 16.dp)
             )
             OutlinedTextField (
-                value = "",
-                onValueChange = {},
+                value = email,
+                onValueChange = { email = it },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
@@ -79,9 +86,11 @@ fun OnBoardingScreen(paddingValues: PaddingValues) {
             Button(
                 onClick = {},
                 colors = ButtonDefaults.buttonColors(containerColor = LittleLemonColor.primary2),
+                shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 24.dp)
+                    .padding(top = 40.dp)
+                    .height(50.dp)
             ) {
                 Text(text = stringResource(R.string.onboarding_button_text))
             }
