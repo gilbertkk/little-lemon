@@ -6,13 +6,14 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -27,7 +28,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SearchBar
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,10 +46,13 @@ import com.example.android.littlelemon.data.Dish
 import com.example.android.littlelemon.data.dishes
 import com.example.android.littlelemon.ui.theme.LittleLemonColor
 import com.example.android.littlelemon.ui.theme.LittleLemonTextStyle
+import com.example.android.littlelemon.ui.theme.LittleLemonTheme
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
-    Column {
+fun HomeScreen(paddingValues: PaddingValues) {
+    Column (modifier = Modifier
+        .padding(paddingValues)
+    ) {
         HomeScreenUpper { AppSearchBar() }
         HomeScreenLower()
     }
@@ -62,7 +67,7 @@ fun HomeScreenUpper(searchBar: @Composable (() -> Unit)? = null) {
         modifier = Modifier
             .fillMaxWidth()
             .background(LittleLemonColor.primary2)
-            .padding(start = 16.dp, end = 16.dp, top = 80.dp)
+            .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
 
     ){
         Text(
@@ -98,7 +103,9 @@ fun HomeScreenUpper(searchBar: @Composable (() -> Unit)? = null) {
             Image(
                 painter = painterResource(id = R.drawable.hero_image),
                 contentDescription = stringResource(id = R.string.home_screen_hero_image_description),
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
+                    .size(150.dp)
                     .clip(RoundedCornerShape(20.dp))
             )
         }
@@ -113,7 +120,6 @@ fun AppSearchBar() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 8.dp, bottom = 8.dp)
-        //.background(LittleLemonColor.highlight1)
     ) {
         OutlinedTextField (
             value = "",
@@ -216,5 +222,13 @@ fun MenuDish(dish: Dish) {
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen()
+    LittleLemonTheme {
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            topBar = { MyTopAppBar(false)},
+        ) { innerPadding ->
+            HomeScreen(innerPadding
+            )
+        }
+    }
 }

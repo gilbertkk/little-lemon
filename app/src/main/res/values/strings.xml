@@ -6,4 +6,7 @@
         focused on traditional recipes served with a modern twist.</string>
     <string name="home_screen_hero_image_description">Hero Image</string>
     <string name="home_screen_section_title">Order for delivery!</string>
+    <string name="onboarding_name">Name *</string>
+    <string name="onboarding_email">Email *</string>
+    <string name="onboarding_button_text">Validate</string>
 </resources>
