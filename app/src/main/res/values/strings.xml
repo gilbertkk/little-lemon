@@ -9,4 +9,20 @@
     <string name="onboarding_name">Name *</string>
     <string name="onboarding_email">Email *</string>
     <string name="onboarding_button_text">Validate</string>
+    <string name="profile_screen_title">Personal information</string>
+    <string name="profile_screen_avatar">Avatar</string>
+    <string name="profile_screen_button_change">Change</string>
+    <string name="profile_screen_button_remove">Remove</string>
+    <string name="profile_screen_first_name">First name</string>
+    <string name="profile_screen_last_name">Last name</string>
+    <string name="profile_screen_email">Email</string>
+    <string name="profile_screen_phone_number">Phone number</string>
+    <string name="profile_screen_email_notifications">Email notifications</string>
+    <string name="profile_screen_checkbox_order_statuses">Order statuses</string>
+    <string name="profile_screen_checkbox_password_changes">Password changes</string>
+    <string name="profile_screen_checkbox_special_offers">Special offers</string>
+    <string name="profile_screen_checkbox_newsletter">Newsletter</string>
+    <string name="profile_screen_button_log_out">Log out</string>
+    <string name="profile_screen_button_discard_changes">Discard changes</string>
+    <string name="profile_screen_button_save_changes">Save changes</string>
 </resources>

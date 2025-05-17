@@ -17,22 +17,22 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             LittleLemonTheme {
-                ScreenContainer(false)
+                ProfileScreen()
             }
         }
     }
 }
 
-@Composable
-fun ScreenContainer(hasActions: Boolean = false, hasNavigationIcons: Boolean = false) {
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = { MyTopAppBar(hasActions, hasNavigationIcons)},
-    ) { innerPadding ->
-        HomeScreen(innerPadding
-        )
-    }
-}
+//@Composable
+//fun ScreenContainer(hasActions: Boolean = false, hasNavigationIcons: Boolean = false) {
+//    Scaffold(
+//        modifier = Modifier.fillMaxSize(),
+//        topBar = { MyTopAppBar(hasActions, hasNavigationIcons)},
+//    ) { innerPadding ->
+//        HomeScreen(innerPadding
+//        )
+//    }
+//}
 
 
 
