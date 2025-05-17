@@ -28,10 +28,15 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -115,6 +120,8 @@ fun HomeScreenUpper(searchBar: @Composable (() -> Unit)? = null) {
 
 @Composable
 fun AppSearchBar() {
+    var searchInput by rememberSaveable { mutableStateOf("") }
+
     Surface(
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier
@@ -122,8 +129,10 @@ fun AppSearchBar() {
             .padding(top = 8.dp, bottom = 8.dp)
     ) {
         OutlinedTextField (
-            value = "",
-            onValueChange = {},
+            value = searchInput,
+            onValueChange = {searchInput = it },
+            shape = RoundedCornerShape(8.dp),
+            colors = OutlinedTextFieldDefaults.colors(unfocusedBorderColor = LittleLemonColor.primary2),
             leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = "search icon") },
             modifier = Modifier
                 .background(LittleLemonColor.highlight1)
