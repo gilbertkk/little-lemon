@@ -12,7 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyTopAppBar(isOnBoarding: Boolean) {
+fun MyTopAppBar(hasActions: Boolean = false, hasNavigationIcon: Boolean = false) {
     CenterAlignedTopAppBar(
         title = {
             Image(
@@ -23,7 +23,18 @@ fun MyTopAppBar(isOnBoarding: Boolean) {
             )
         },
         actions = {
-            if (!isOnBoarding) {
+            if (hasActions) {
+                IconButton(onClick = {
+                }) {
+                    Image(
+                        painter = painterResource(id = R.drawable.profile),
+                        contentDescription = "profile Image"
+                    )
+                }
+            }
+        },
+        navigationIcon = {
+            if (hasNavigationIcon) {
                 IconButton(onClick = {
                 }) {
                     Image(

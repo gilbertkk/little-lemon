@@ -17,19 +17,19 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             LittleLemonTheme {
-                ScreenContainer(true)
+                ScreenContainer(false)
             }
         }
     }
 }
 
 @Composable
-fun ScreenContainer(isOnBoarding: Boolean) {
+fun ScreenContainer(hasActions: Boolean = false, hasNavigationIcons: Boolean = false) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { MyTopAppBar(isOnBoarding)},
+        topBar = { MyTopAppBar(hasActions, hasNavigationIcons)},
     ) { innerPadding ->
-        OnBoardingScreen(innerPadding
+        HomeScreen(innerPadding
         )
     }
 }
