@@ -6,7 +6,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -44,24 +43,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.android.littlelemon.data.Categories
 import com.example.android.littlelemon.data.Dish
 import com.example.android.littlelemon.data.dishes
 import com.example.android.littlelemon.ui.theme.LittleLemonColor
 import com.example.android.littlelemon.ui.theme.LittleLemonTextStyle
-import com.example.android.littlelemon.ui.theme.LittleLemonTheme
 
 @Composable
-fun HomeScreen(paddingValues: PaddingValues) {
-    Column (modifier = Modifier
-        .padding(paddingValues)
-    ) {
-        HomeScreenUpper { AppSearchBar() }
-        HomeScreenLower()
+fun HomeScreen(hasActions: Boolean = true, hasNavigationIcons: Boolean = false) {
+    Scaffold(
+        topBar = { MyTopAppBar(hasActions, hasNavigationIcons)},
+        modifier = Modifier
+            .fillMaxSize(),
+    ) { paddingValues ->
+        Column (modifier = Modifier
+            .padding(paddingValues)
+        ) {
+            HomeScreenUpper { AppSearchBar() }
+            HomeScreenLower()
+        }
     }
-
 }
 
 @Composable
@@ -226,18 +228,4 @@ fun MenuDish(dish: Dish) {
         color = Color.Gray,
         thickness = 0.2.dp
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview() {
-    LittleLemonTheme {
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            topBar = { MyTopAppBar(false)},
-        ) { innerPadding ->
-            HomeScreen(innerPadding
-            )
-        }
-    }
 }

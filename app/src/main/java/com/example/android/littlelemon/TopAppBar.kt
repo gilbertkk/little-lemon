@@ -7,6 +7,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -19,7 +20,7 @@ fun MyTopAppBar(hasActions: Boolean = false, hasNavigationIcon: Boolean = false)
                 painter = painterResource(id = R.drawable.logo),
                 contentDescription = "Little Lemon logo",
                 modifier = Modifier
-                    .fillMaxWidth(.40f)
+                    .fillMaxWidth(.50f)
             )
         },
         actions = {
@@ -35,11 +36,13 @@ fun MyTopAppBar(hasActions: Boolean = false, hasNavigationIcon: Boolean = false)
         },
         navigationIcon = {
             if (hasNavigationIcon) {
-                IconButton(onClick = {
-                }) {
+                IconButton(
+                    onClick = {}
+                ) {
                     Image(
-                        painter = painterResource(id = R.drawable.profile),
-                        contentDescription = "profile Image"
+                        painter = painterResource(R.drawable.arrow_back_button),
+                        contentDescription = "Localized description",
+                        contentScale = ContentScale.Crop
                     )
                 }
             }
