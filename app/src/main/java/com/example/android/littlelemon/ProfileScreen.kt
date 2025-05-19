@@ -40,18 +40,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.android.littlelemon.ui.theme.LittleLemonColor
 import com.example.android.littlelemon.ui.theme.LittleLemonTextStyle
 
 @Composable
-fun ProfileScreen(hasActions: Boolean = true, hasNavigationIcons: Boolean = true) {
+fun ProfileScreen(hasActions: Boolean = true, hasNavigationIcons: Boolean = true, navController: NavController) {
     var firstName by rememberSaveable { mutableStateOf("") }
     var lastName by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
     var phoneNumber by rememberSaveable { mutableStateOf("") }
 
     Scaffold(
-        topBar = { MyTopAppBar(hasActions, hasNavigationIcons)},
+        topBar = { MyTopAppBar(hasActions, hasNavigationIcons, navController)},
         modifier = Modifier
             .fillMaxSize(),
     ) { paddingValues ->

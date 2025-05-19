@@ -44,6 +44,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.android.littlelemon.data.Categories
 import com.example.android.littlelemon.data.Dish
 import com.example.android.littlelemon.data.dishes
@@ -51,9 +52,9 @@ import com.example.android.littlelemon.ui.theme.LittleLemonColor
 import com.example.android.littlelemon.ui.theme.LittleLemonTextStyle
 
 @Composable
-fun HomeScreen(hasActions: Boolean = true, hasNavigationIcons: Boolean = false) {
+fun HomeScreen(hasActions: Boolean = true, hasNavigationIcons: Boolean = false, navController: NavController) {
     Scaffold(
-        topBar = { MyTopAppBar(hasActions, hasNavigationIcons)},
+        topBar = { MyTopAppBar(hasActions, hasNavigationIcons, navController)},
         modifier = Modifier
             .fillMaxSize(),
     ) { paddingValues ->
