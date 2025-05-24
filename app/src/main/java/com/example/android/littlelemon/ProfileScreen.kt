@@ -52,7 +52,7 @@ fun ProfileScreen(hasActions: Boolean = true, hasNavigationIcons: Boolean = true
     var phoneNumber by rememberSaveable { mutableStateOf("") }
 
     Scaffold(
-        topBar = { MyTopAppBar(hasActions, hasNavigationIcons, navController)},
+        topBar = { TopAppBar(hasActions, hasNavigationIcons, navController)},
         modifier = Modifier
             .fillMaxSize(),
     ) { paddingValues ->

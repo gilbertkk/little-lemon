@@ -13,7 +13,7 @@ import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyTopAppBar(hasActions: Boolean = false, hasNavigationIcon: Boolean = false, navController: NavController) {
+fun TopAppBar(hasActions: Boolean = false, hasNavigationIcon: Boolean = false, navController: NavController) {
     CenterAlignedTopAppBar(
         title = {
             Image(

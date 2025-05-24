@@ -14,3 +14,8 @@ object ProfileDestination: Destinations {
     override val route: String
         get() = "Profile"
 }
+
+object OnboardingDestination: Destinations {
+    override val route: String
+        get() = "Onboarding"
+}

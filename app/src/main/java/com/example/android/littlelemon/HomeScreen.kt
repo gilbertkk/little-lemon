@@ -54,7 +54,7 @@ import com.example.android.littlelemon.ui.theme.LittleLemonTextStyle
 @Composable
 fun HomeScreen(hasActions: Boolean = true, hasNavigationIcons: Boolean = false, navController: NavController) {
     Scaffold(
-        topBar = { MyTopAppBar(hasActions, hasNavigationIcons, navController)},
+        topBar = { TopAppBar(hasActions, hasNavigationIcons, navController)},
         modifier = Modifier
             .fillMaxSize(),
     ) { paddingValues ->
