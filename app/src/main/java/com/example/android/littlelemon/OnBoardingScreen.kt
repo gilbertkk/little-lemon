@@ -30,8 +30,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.android.littlelemon.data.AppRepository
+import com.example.android.littlelemon.data.User
 import com.example.android.littlelemon.ui.theme.LittleLemonColor
 import com.example.android.littlelemon.ui.theme.LittleLemonTextStyle
+import kotlinx.coroutines.runBlocking
+import java.util.UUID
 
 @Composable
 fun OnBoardingScreen(
@@ -39,7 +43,9 @@ fun OnBoardingScreen(
     hasNavigationIcons: Boolean = false,
     navController: NavController
 ) {
-    val sharedPreferences = LocalContext.current.getSharedPreferences("little_lemon", MODE_PRIVATE)
+    val context = LocalContext.current
+    val sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_FILE_NAME, MODE_PRIVATE)
+    val appRepository by lazy { AppRepository.get() }
 
     Scaffold(
         topBar = { TopAppBar(hasActions, hasNavigationIcons, navController)},
@@ -96,9 +102,18 @@ fun OnBoardingScreen(
                 )
                 Button(
                     onClick = {
+                        val userId = UUID.randomUUID()
+                        val user = User(id = userId, firstname = name, email = email)
+
                         sharedPreferences.edit()
-                            .putBoolean("isOnboarded", true)
+                            .putBoolean(SHARED_PREFERENCES_IS_ONBOARDED, true)
+                            .putString(SHARED_PREFERENCES_USER_ID, userId.toString())
                             .apply()
+
+                        runBlocking {
+                            appRepository.insert(user)
+                        }
+
                         navController.navigate(HomeDestination.route) {
                             popUpTo(OnboardingDestination.route) {
                                 inclusive = true

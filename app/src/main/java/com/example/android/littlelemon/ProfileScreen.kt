@@ -1,5 +1,6 @@
 package com.example.android.littlelemon
 
+import android.content.SharedPreferences
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -41,15 +42,40 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.android.littlelemon.data.AppRepository
+import com.example.android.littlelemon.data.User
 import com.example.android.littlelemon.ui.theme.LittleLemonColor
 import com.example.android.littlelemon.ui.theme.LittleLemonTextStyle
+import kotlinx.coroutines.runBlocking
+import java.util.UUID
 
 @Composable
-fun ProfileScreen(hasActions: Boolean = true, hasNavigationIcons: Boolean = true, navController: NavController) {
-    var firstName by rememberSaveable { mutableStateOf("") }
-    var lastName by rememberSaveable { mutableStateOf("") }
-    var email by rememberSaveable { mutableStateOf("") }
-    var phoneNumber by rememberSaveable { mutableStateOf("") }
+fun ProfileScreen(
+    hasActions: Boolean = true,
+    hasNavigationIcons: Boolean = true,
+    navController: NavController,
+    sharedPreferences: SharedPreferences
+) {
+    val appRepository by lazy { AppRepository.get() }
+    val userId = UUID.fromString(sharedPreferences.getString(SHARED_PREFERENCES_USER_ID, ""))
+    var user: User
+
+    runBlocking {
+        user = appRepository.getUser(userId)
+    }
+
+    // For backing up user profile info before any changes
+    val userBackup = user.copy()
+
+
+    var firstName by rememberSaveable { mutableStateOf(user.firstname) }
+    var lastName by rememberSaveable { mutableStateOf(user.lastname) }
+    var email by rememberSaveable { mutableStateOf(user.email) }
+    var phoneNumber by rememberSaveable { mutableStateOf(user.phoneNumber) }
+    var checkboxOrderStatuses by rememberSaveable { mutableStateOf(user.notificationOrderStatuses) }
+    var checkboxPasswordChanges by rememberSaveable { mutableStateOf(user.notificationPasswordChanges) }
+    var checkboxSpecialOffers by rememberSaveable { mutableStateOf(user.notificationSpecialOffers) }
+    var checkboxNewsletter by rememberSaveable { mutableStateOf(user.notificationNewsletter) }
 
     Scaffold(
         topBar = { TopAppBar(hasActions, hasNavigationIcons, navController)},
@@ -181,8 +207,10 @@ fun ProfileScreen(hasActions: Boolean = true, hasNavigationIcons: Boolean = true
                         .padding(top = 16.dp)
                 ) {
                     Checkbox(
-                        checked = true,
-                        onCheckedChange = {},
+                        checked = checkboxOrderStatuses,
+                        onCheckedChange = {
+                            checkboxOrderStatuses = !checkboxOrderStatuses
+                        },
                         colors = CheckboxDefaults.colors(checkedColor = LittleLemonColor.primary2),
                         modifier = Modifier
                             .size(16.dp)
@@ -200,8 +228,10 @@ fun ProfileScreen(hasActions: Boolean = true, hasNavigationIcons: Boolean = true
                         .padding(top = 16.dp)
                 ) {
                     Checkbox(
-                        checked = true,
-                        onCheckedChange = {},
+                        checked = checkboxPasswordChanges,
+                        onCheckedChange = {
+                            checkboxPasswordChanges = !checkboxPasswordChanges
+                        },
                         colors = CheckboxDefaults.colors(checkedColor = LittleLemonColor.primary2),
                         modifier = Modifier
                             .size(16.dp)
@@ -219,8 +249,10 @@ fun ProfileScreen(hasActions: Boolean = true, hasNavigationIcons: Boolean = true
                         .padding(top = 16.dp)
                 ) {
                     Checkbox(
-                        checked = true,
-                        onCheckedChange = {},
+                        checked = checkboxSpecialOffers,
+                        onCheckedChange = {
+                            checkboxSpecialOffers = !checkboxSpecialOffers
+                        },
                         colors = CheckboxDefaults.colors(checkedColor = LittleLemonColor.primary2),
                         modifier = Modifier
                             .size(16.dp)
@@ -238,8 +270,10 @@ fun ProfileScreen(hasActions: Boolean = true, hasNavigationIcons: Boolean = true
                         .padding(top = 16.dp)
                 ) {
                     Checkbox(
-                        checked = true,
-                        onCheckedChange = {},
+                        checked = checkboxNewsletter,
+                        onCheckedChange = {
+                            checkboxNewsletter = !checkboxNewsletter
+                        },
                         colors = CheckboxDefaults.colors(checkedColor = LittleLemonColor.primary2),
                         modifier = Modifier
                             .size(16.dp)
@@ -276,7 +310,16 @@ fun ProfileScreen(hasActions: Boolean = true, hasNavigationIcons: Boolean = true
                         .padding(top = 24.dp, start = 8.dp, end = 8.dp, bottom = 24.dp)
                 ) {
                     OutlinedButton(
-                        onClick = {},
+                        onClick = {
+                            firstName = userBackup.firstname
+                            lastName = userBackup.lastname
+                            email = userBackup.email
+                            phoneNumber = userBackup.phoneNumber
+                            checkboxOrderStatuses = userBackup.notificationOrderStatuses
+                            checkboxPasswordChanges = userBackup.notificationPasswordChanges
+                            checkboxSpecialOffers = userBackup.notificationSpecialOffers
+                            checkboxNewsletter = userBackup.notificationNewsletter
+                        },
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Gray)
                     ) {
@@ -284,7 +327,25 @@ fun ProfileScreen(hasActions: Boolean = true, hasNavigationIcons: Boolean = true
                     }
 
                     Button(
-                        onClick = {},
+                        onClick = {
+                            runBlocking {
+                                val updatedUser = User(
+                                    id = userId,
+                                    firstname = firstName,
+                                    lastname = lastName,
+                                    email = email,
+                                    phoneNumber = phoneNumber,
+                                    notificationOrderStatuses = checkboxOrderStatuses,
+                                    notificationPasswordChanges = checkboxPasswordChanges,
+                                    notificationSpecialOffers = checkboxSpecialOffers,
+                                    notificationNewsletter = checkboxNewsletter
+                                )
+
+                                appRepository.update(updatedUser)
+                            }
+
+                            navController.popBackStack()
+                        },
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = LittleLemonColor.primary2)
                     ) {
@@ -296,4 +357,3 @@ fun ProfileScreen(hasActions: Boolean = true, hasNavigationIcons: Boolean = true
 
     }
 }
-

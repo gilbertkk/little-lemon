@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.android.littlelemon.ui.theme.LittleLemonTheme
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -38,7 +39,7 @@ fun StackNavigation() {
         }
 
         composable(ProfileDestination.route) {
-            ProfileScreen(navController = navController)
+            ProfileScreen(navController = navController, sharedPreferences = sharedPreferences)
         }
 
         composable(OnboardingDestination.route) {
