@@ -52,9 +52,16 @@ import com.example.android.littlelemon.ui.theme.LittleLemonColor
 import com.example.android.littlelemon.ui.theme.LittleLemonTextStyle
 
 @Composable
-fun HomeScreen(hasActions: Boolean = true, hasNavigationIcons: Boolean = false, navController: NavController) {
+fun HomeScreen(
+    hasActions: Boolean = true,
+    hasNavigationIcons: Boolean = false,
+    navController: NavController
+) {
+    val topBarMenuAction: ()-> Unit = {
+        navController.navigate(ProfileDestination.route)
+    }
     Scaffold(
-        topBar = { TopAppBar(hasActions, hasNavigationIcons, navController)},
+        topBar = { TopAppBar(hasActions, hasNavigationIcons, navController, action = topBarMenuAction)},
         modifier = Modifier
             .fillMaxSize(),
     ) { paddingValues ->

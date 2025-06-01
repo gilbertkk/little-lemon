@@ -13,7 +13,12 @@ import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopAppBar(hasActions: Boolean = false, hasNavigationIcon: Boolean = false, navController: NavController) {
+fun TopAppBar(
+    hasActions: Boolean = false,
+    hasNavigationIcon: Boolean = false,
+    navController: NavController,
+    action: () -> Unit = {}
+) {
     CenterAlignedTopAppBar(
         title = {
             Image(
@@ -26,7 +31,7 @@ fun TopAppBar(hasActions: Boolean = false, hasNavigationIcon: Boolean = false, n
         actions = {
             if (hasActions) {
                 IconButton(onClick = {
-                    navController.navigate(ProfileDestination.route)
+                    action()
                 }) {
                     Image(
                         painter = painterResource(id = R.drawable.profile),
