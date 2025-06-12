@@ -6,8 +6,8 @@ import java.util.UUID
 
 @Entity(tableName = "users")
 data class User(
-    @PrimaryKey
-    val id: UUID,
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
     val firstname: String = "",
     val lastname: String = "",
     val email: String = "",

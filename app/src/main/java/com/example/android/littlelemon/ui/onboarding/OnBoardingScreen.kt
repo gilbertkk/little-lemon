@@ -1,6 +1,7 @@
-package com.example.android.littlelemon
+package com.example.android.littlelemon.ui.onboarding
 
 import android.content.Context.MODE_PRIVATE
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,26 +30,30 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import com.example.android.littlelemon.R
+import com.example.android.littlelemon.SHARED_PREFERENCES_FILE_NAME
+import com.example.android.littlelemon.SHARED_PREFERENCES_IS_ONBOARDED
+import com.example.android.littlelemon.SHARED_PREFERENCES_USER_ID
+import com.example.android.littlelemon.TopAppBar
 import com.example.android.littlelemon.data.AppRepository
 import com.example.android.littlelemon.data.User
+import com.example.android.littlelemon.ui.home.HomeScreenUpper
 import com.example.android.littlelemon.ui.theme.LittleLemonColor
 import com.example.android.littlelemon.ui.theme.LittleLemonTextStyle
 import kotlinx.coroutines.runBlocking
-import java.util.UUID
 
 @Composable
 fun OnBoardingScreen(
     hasActions: Boolean = false,
     hasNavigationIcons: Boolean = false,
-    navController: NavController
+    navigateToHome: () -> Unit
 ) {
     val context = LocalContext.current
     val sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_FILE_NAME, MODE_PRIVATE)
     val appRepository by lazy { AppRepository.get() }
 
     Scaffold(
-        topBar = { TopAppBar(hasActions, hasNavigationIcons, navController)},
+        topBar = { TopAppBar(hasActions, hasNavigationIcons) },
         modifier = Modifier
             .fillMaxSize(),
     ) { paddingValues ->
@@ -102,23 +107,28 @@ fun OnBoardingScreen(
                 )
                 Button(
                     onClick = {
-                        val userId = UUID.randomUUID()
-                        val user = User(id = userId, firstname = name, email = email)
-
-                        sharedPreferences.edit()
-                            .putBoolean(SHARED_PREFERENCES_IS_ONBOARDED, true)
-                            .putString(SHARED_PREFERENCES_USER_ID, userId.toString())
-                            .apply()
+                        var userId = 0
+                        val user = User(id =userId, firstname = name, email = email)
 
                         runBlocking {
                             appRepository.insert(user)
                         }
-
-                        navController.navigate(HomeDestination.route) {
-                            popUpTo(OnboardingDestination.route) {
-                                inclusive = true
-                            }
+                        Log.d("debugging", "form validate button after user insertion")
+                        runBlocking {
+                            userId =  appRepository.getAllUsers().first().id
                         }
+
+                        Log.d("debugging", "form validate button after users uploading, id = $userId")
+
+                        sharedPreferences.edit()
+                            .putBoolean(SHARED_PREFERENCES_IS_ONBOARDED, true)
+                            .putInt(SHARED_PREFERENCES_USER_ID, userId)
+                            .apply()
+
+                        Log.d("debugging", "form validate button after sharedPreferences setting up")
+
+                        navigateToHome()
+                        Log.d("debugging", "form validate button after navigating to Home")
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = LittleLemonColor.primary2),
                     shape = RoundedCornerShape(8.dp),

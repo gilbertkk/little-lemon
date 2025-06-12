@@ -4,16 +4,18 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import java.util.UUID
 
 @Dao
 interface UserDao {
     @Insert
-    suspend fun insert(user: User)
+    suspend fun insertUser(user: User)
 
     @Update
-    suspend fun update(user: User)
+    suspend fun updateUser(user: User)
 
     @Query("SELECT * FROM users WHERE id = :userId;")
-    suspend fun getUser(userId: UUID) : User
+    suspend fun getUser(userId: Int) : User
+
+    @Query("SELECT * FROM users")
+    suspend fun getAllUsers(): List<User>
 }

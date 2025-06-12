@@ -1,14 +1,14 @@
 package com.example.android.littlelemon.data
 
 import android.content.Context
-import java.util.UUID
 
 class AppRepository private constructor(context: Context) {
     private val database: AppDatabase = AppDatabase.getDatabase(context)
 
-    suspend fun insert(user: User) = database.userDao().insert(user)
-    suspend fun update(user: User) = database.userDao().update(user)
-    suspend fun getUser(userId: UUID) = database.userDao().getUser(userId)
+    suspend fun insert(user: User) = database.userDao().insertUser(user)
+    suspend fun updateUser(user: User) = database.userDao().updateUser(user)
+    suspend fun getUser(userId: Int) = database.userDao().getUser(userId)
+    suspend fun getAllUsers() = database.userDao().getAllUsers()
 
     companion object {
         private var INSTANCE: AppRepository? = null

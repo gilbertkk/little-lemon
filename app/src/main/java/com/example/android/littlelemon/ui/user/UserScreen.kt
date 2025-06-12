@@ -1,6 +1,7 @@
-package com.example.android.littlelemon
+package com.example.android.littlelemon.ui.user
 
-import android.content.SharedPreferences
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,10 +28,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,44 +39,26 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import com.example.android.littlelemon.data.AppRepository
-import com.example.android.littlelemon.data.User
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.android.littlelemon.R
+import com.example.android.littlelemon.TopAppBar
 import com.example.android.littlelemon.ui.theme.LittleLemonColor
 import com.example.android.littlelemon.ui.theme.LittleLemonTextStyle
-import kotlinx.coroutines.runBlocking
-import java.util.UUID
+import kotlinx.coroutines.launch
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun ProfileScreen(
+fun UserScreen(
     hasActions: Boolean = true,
     hasNavigationIcons: Boolean = true,
-    navController: NavController,
-    sharedPreferences: SharedPreferences
+    viewModel: UserViewModel = viewModel(),
+    navigateBack: () -> Unit = {}
 ) {
-    val appRepository by lazy { AppRepository.get() }
-    val userId = UUID.fromString(sharedPreferences.getString(SHARED_PREFERENCES_USER_ID, ""))
-    var user: User
+    val coroutineScope = rememberCoroutineScope()
 
-    runBlocking {
-        user = appRepository.getUser(userId)
-    }
-
-    // For backing up user profile info before any changes
-    val userBackup = user.copy()
-
-
-    var firstName by rememberSaveable { mutableStateOf(user.firstname) }
-    var lastName by rememberSaveable { mutableStateOf(user.lastname) }
-    var email by rememberSaveable { mutableStateOf(user.email) }
-    var phoneNumber by rememberSaveable { mutableStateOf(user.phoneNumber) }
-    var checkboxOrderStatuses by rememberSaveable { mutableStateOf(user.notificationOrderStatuses) }
-    var checkboxPasswordChanges by rememberSaveable { mutableStateOf(user.notificationPasswordChanges) }
-    var checkboxSpecialOffers by rememberSaveable { mutableStateOf(user.notificationSpecialOffers) }
-    var checkboxNewsletter by rememberSaveable { mutableStateOf(user.notificationNewsletter) }
-
+    Log.d("debugging", "in userScreen composable")
     Scaffold(
-        topBar = { TopAppBar(hasActions, hasNavigationIcons, navController)},
+        topBar = { TopAppBar(hasActions, hasNavigationIcons,navigateBack = navigateBack ) },
         modifier = Modifier
             .fillMaxSize(),
     ) { paddingValues ->
@@ -139,27 +119,35 @@ fun ProfileScreen(
                     }
                 }
 
-
                 Text(
                     text = stringResource(R.string.profile_screen_first_name),
                     modifier = Modifier
                         .padding(top = 16.dp))
                 OutlinedTextField(
-                    value = firstName,
-                    onValueChange = { firstName = it },
+                    value = viewModel.userDetails.firstname,
+                    onValueChange = {
+                        viewModel.updateUseUiState(
+                            viewModel.userDetails.copy(firstname = it)
+                        )
+                    },
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(color = Color.White, shape = RoundedCornerShape((8.dp)))
                 )
 
+
                 Text(
                     text = stringResource(R.string.profile_screen_last_name),
                     modifier = Modifier
                         .padding(top = 16.dp))
                 OutlinedTextField(
-                    value = lastName,
-                    onValueChange = { lastName = it },
+                    value = viewModel.userDetails.lastname,
+                    onValueChange = {
+                        viewModel.updateUseUiState(
+                            viewModel.userDetails.copy(lastname = it)
+                        )
+                    },
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -171,8 +159,12 @@ fun ProfileScreen(
                     modifier = Modifier
                         .padding(top = 16.dp))
                 OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
+                    value = viewModel.userDetails.email,
+                    onValueChange = {
+                        viewModel.updateUseUiState(
+                            viewModel.userDetails.copy(email = it)
+                        )
+                    },
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -184,8 +176,12 @@ fun ProfileScreen(
                     modifier = Modifier
                         .padding(top = 16.dp))
                 OutlinedTextField(
-                    value = phoneNumber,
-                    onValueChange = { phoneNumber = it },
+                    value = viewModel.userDetails.phoneNumber,
+                    onValueChange = {
+                        viewModel.updateUseUiState(
+                            viewModel.userDetails.copy(phoneNumber = it)
+                        )
+                    },
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -207,9 +203,12 @@ fun ProfileScreen(
                         .padding(top = 16.dp)
                 ) {
                     Checkbox(
-                        checked = checkboxOrderStatuses,
+                        checked = viewModel.userDetails.notificationOrderStatuses,
                         onCheckedChange = {
-                            checkboxOrderStatuses = !checkboxOrderStatuses
+                            viewModel.updateUseUiState(
+                                viewModel.userDetails.copy(notificationOrderStatuses =
+                                !viewModel.userDetails.notificationOrderStatuses)
+                            )
                         },
                         colors = CheckboxDefaults.colors(checkedColor = LittleLemonColor.primary2),
                         modifier = Modifier
@@ -228,9 +227,12 @@ fun ProfileScreen(
                         .padding(top = 16.dp)
                 ) {
                     Checkbox(
-                        checked = checkboxPasswordChanges,
+                        checked = viewModel.userDetails.notificationPasswordChanges,
                         onCheckedChange = {
-                            checkboxPasswordChanges = !checkboxPasswordChanges
+                            viewModel.updateUseUiState(
+                                viewModel.userDetails.copy(notificationPasswordChanges =
+                                !viewModel.userDetails.notificationPasswordChanges)
+                            )
                         },
                         colors = CheckboxDefaults.colors(checkedColor = LittleLemonColor.primary2),
                         modifier = Modifier
@@ -249,9 +251,12 @@ fun ProfileScreen(
                         .padding(top = 16.dp)
                 ) {
                     Checkbox(
-                        checked = checkboxSpecialOffers,
+                        checked = viewModel.userDetails.notificationSpecialOffers,
                         onCheckedChange = {
-                            checkboxSpecialOffers = !checkboxSpecialOffers
+                            viewModel.updateUseUiState(
+                                viewModel.userDetails.copy(notificationSpecialOffers =
+                                !viewModel.userDetails.notificationSpecialOffers)
+                            )
                         },
                         colors = CheckboxDefaults.colors(checkedColor = LittleLemonColor.primary2),
                         modifier = Modifier
@@ -270,9 +275,12 @@ fun ProfileScreen(
                         .padding(top = 16.dp)
                 ) {
                     Checkbox(
-                        checked = checkboxNewsletter,
+                        checked = viewModel.userDetails.notificationNewsletter,
                         onCheckedChange = {
-                            checkboxNewsletter = !checkboxNewsletter
+                            viewModel.updateUseUiState(
+                                viewModel.userDetails.copy(notificationNewsletter =
+                                !viewModel.userDetails.notificationNewsletter)
+                            )
                         },
                         colors = CheckboxDefaults.colors(checkedColor = LittleLemonColor.primary2),
                         modifier = Modifier
@@ -311,14 +319,7 @@ fun ProfileScreen(
                 ) {
                     OutlinedButton(
                         onClick = {
-                            firstName = userBackup.firstname
-                            lastName = userBackup.lastname
-                            email = userBackup.email
-                            phoneNumber = userBackup.phoneNumber
-                            checkboxOrderStatuses = userBackup.notificationOrderStatuses
-                            checkboxPasswordChanges = userBackup.notificationPasswordChanges
-                            checkboxSpecialOffers = userBackup.notificationSpecialOffers
-                            checkboxNewsletter = userBackup.notificationNewsletter
+                            viewModel.restoreUiState()
                         },
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Gray)
@@ -328,23 +329,10 @@ fun ProfileScreen(
 
                     Button(
                         onClick = {
-                            runBlocking {
-                                val updatedUser = User(
-                                    id = userId,
-                                    firstname = firstName,
-                                    lastname = lastName,
-                                    email = email,
-                                    phoneNumber = phoneNumber,
-                                    notificationOrderStatuses = checkboxOrderStatuses,
-                                    notificationPasswordChanges = checkboxPasswordChanges,
-                                    notificationSpecialOffers = checkboxSpecialOffers,
-                                    notificationNewsletter = checkboxNewsletter
-                                )
-
-                                appRepository.update(updatedUser)
+                            coroutineScope.launch {
+                                viewModel.updateUser()
+                                navigateBack()
                             }
-
-                            navController.popBackStack()
                         },
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = LittleLemonColor.primary2)

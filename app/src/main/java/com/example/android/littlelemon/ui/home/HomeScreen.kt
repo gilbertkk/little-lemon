@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.example.android.littlelemon
+package com.example.android.littlelemon.ui.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -44,7 +44,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import com.example.android.littlelemon.R
+import com.example.android.littlelemon.TopAppBar
 import com.example.android.littlelemon.data.Categories
 import com.example.android.littlelemon.data.Dish
 import com.example.android.littlelemon.data.dishes
@@ -55,13 +56,15 @@ import com.example.android.littlelemon.ui.theme.LittleLemonTextStyle
 fun HomeScreen(
     hasActions: Boolean = true,
     hasNavigationIcons: Boolean = false,
-    navController: NavController
+    navigateToUser: () -> Unit,
 ) {
-    val topBarMenuAction: ()-> Unit = {
-        navController.navigate(ProfileDestination.route)
-    }
     Scaffold(
-        topBar = { TopAppBar(hasActions, hasNavigationIcons, navController, action = topBarMenuAction)},
+        topBar = {
+            TopAppBar(
+                hasActions, hasNavigationIcons,
+                navigateToUser = navigateToUser
+            )
+                 },
         modifier = Modifier
             .fillMaxSize(),
     ) { paddingValues ->
