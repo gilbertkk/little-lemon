@@ -1,5 +1,7 @@
-package com.example.android.littlelemon
+package com.example.android.littlelemon.ui.user
 
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,10 +28,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,19 +39,26 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.android.littlelemon.R
+import com.example.android.littlelemon.TopAppBar
 import com.example.android.littlelemon.ui.theme.LittleLemonColor
 import com.example.android.littlelemon.ui.theme.LittleLemonTextStyle
+import kotlinx.coroutines.launch
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun ProfileScreen(hasActions: Boolean = true, hasNavigationIcons: Boolean = true, navController: NavController) {
-    var firstName by rememberSaveable { mutableStateOf("") }
-    var lastName by rememberSaveable { mutableStateOf("") }
-    var email by rememberSaveable { mutableStateOf("") }
-    var phoneNumber by rememberSaveable { mutableStateOf("") }
+fun UserScreen(
+    hasActions: Boolean = true,
+    hasNavigationIcons: Boolean = true,
+    viewModel: UserViewModel = viewModel(),
+    navigateBack: () -> Unit = {}
+) {
+    val coroutineScope = rememberCoroutineScope()
 
+    Log.d("debugging", "in userScreen composable")
     Scaffold(
-        topBar = { MyTopAppBar(hasActions, hasNavigationIcons, navController)},
+        topBar = { TopAppBar(hasActions, hasNavigationIcons,navigateBack = navigateBack ) },
         modifier = Modifier
             .fillMaxSize(),
     ) { paddingValues ->
@@ -113,27 +119,35 @@ fun ProfileScreen(hasActions: Boolean = true, hasNavigationIcons: Boolean = true
                     }
                 }
 
-
                 Text(
                     text = stringResource(R.string.profile_screen_first_name),
                     modifier = Modifier
                         .padding(top = 16.dp))
                 OutlinedTextField(
-                    value = firstName,
-                    onValueChange = { firstName = it },
+                    value = viewModel.userDetails.firstname,
+                    onValueChange = {
+                        viewModel.updateUseUiState(
+                            viewModel.userDetails.copy(firstname = it)
+                        )
+                    },
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(color = Color.White, shape = RoundedCornerShape((8.dp)))
                 )
 
+
                 Text(
                     text = stringResource(R.string.profile_screen_last_name),
                     modifier = Modifier
                         .padding(top = 16.dp))
                 OutlinedTextField(
-                    value = lastName,
-                    onValueChange = { lastName = it },
+                    value = viewModel.userDetails.lastname,
+                    onValueChange = {
+                        viewModel.updateUseUiState(
+                            viewModel.userDetails.copy(lastname = it)
+                        )
+                    },
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -145,8 +159,12 @@ fun ProfileScreen(hasActions: Boolean = true, hasNavigationIcons: Boolean = true
                     modifier = Modifier
                         .padding(top = 16.dp))
                 OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
+                    value = viewModel.userDetails.email,
+                    onValueChange = {
+                        viewModel.updateUseUiState(
+                            viewModel.userDetails.copy(email = it)
+                        )
+                    },
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -158,8 +176,12 @@ fun ProfileScreen(hasActions: Boolean = true, hasNavigationIcons: Boolean = true
                     modifier = Modifier
                         .padding(top = 16.dp))
                 OutlinedTextField(
-                    value = phoneNumber,
-                    onValueChange = { phoneNumber = it },
+                    value = viewModel.userDetails.phoneNumber,
+                    onValueChange = {
+                        viewModel.updateUseUiState(
+                            viewModel.userDetails.copy(phoneNumber = it)
+                        )
+                    },
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -181,8 +203,13 @@ fun ProfileScreen(hasActions: Boolean = true, hasNavigationIcons: Boolean = true
                         .padding(top = 16.dp)
                 ) {
                     Checkbox(
-                        checked = true,
-                        onCheckedChange = {},
+                        checked = viewModel.userDetails.notificationOrderStatuses,
+                        onCheckedChange = {
+                            viewModel.updateUseUiState(
+                                viewModel.userDetails.copy(notificationOrderStatuses =
+                                !viewModel.userDetails.notificationOrderStatuses)
+                            )
+                        },
                         colors = CheckboxDefaults.colors(checkedColor = LittleLemonColor.primary2),
                         modifier = Modifier
                             .size(16.dp)
@@ -200,8 +227,13 @@ fun ProfileScreen(hasActions: Boolean = true, hasNavigationIcons: Boolean = true
                         .padding(top = 16.dp)
                 ) {
                     Checkbox(
-                        checked = true,
-                        onCheckedChange = {},
+                        checked = viewModel.userDetails.notificationPasswordChanges,
+                        onCheckedChange = {
+                            viewModel.updateUseUiState(
+                                viewModel.userDetails.copy(notificationPasswordChanges =
+                                !viewModel.userDetails.notificationPasswordChanges)
+                            )
+                        },
                         colors = CheckboxDefaults.colors(checkedColor = LittleLemonColor.primary2),
                         modifier = Modifier
                             .size(16.dp)
@@ -219,8 +251,13 @@ fun ProfileScreen(hasActions: Boolean = true, hasNavigationIcons: Boolean = true
                         .padding(top = 16.dp)
                 ) {
                     Checkbox(
-                        checked = true,
-                        onCheckedChange = {},
+                        checked = viewModel.userDetails.notificationSpecialOffers,
+                        onCheckedChange = {
+                            viewModel.updateUseUiState(
+                                viewModel.userDetails.copy(notificationSpecialOffers =
+                                !viewModel.userDetails.notificationSpecialOffers)
+                            )
+                        },
                         colors = CheckboxDefaults.colors(checkedColor = LittleLemonColor.primary2),
                         modifier = Modifier
                             .size(16.dp)
@@ -238,8 +275,13 @@ fun ProfileScreen(hasActions: Boolean = true, hasNavigationIcons: Boolean = true
                         .padding(top = 16.dp)
                 ) {
                     Checkbox(
-                        checked = true,
-                        onCheckedChange = {},
+                        checked = viewModel.userDetails.notificationNewsletter,
+                        onCheckedChange = {
+                            viewModel.updateUseUiState(
+                                viewModel.userDetails.copy(notificationNewsletter =
+                                !viewModel.userDetails.notificationNewsletter)
+                            )
+                        },
                         colors = CheckboxDefaults.colors(checkedColor = LittleLemonColor.primary2),
                         modifier = Modifier
                             .size(16.dp)
@@ -276,7 +318,9 @@ fun ProfileScreen(hasActions: Boolean = true, hasNavigationIcons: Boolean = true
                         .padding(top = 24.dp, start = 8.dp, end = 8.dp, bottom = 24.dp)
                 ) {
                     OutlinedButton(
-                        onClick = {},
+                        onClick = {
+                            viewModel.restoreUiState()
+                        },
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Gray)
                     ) {
@@ -284,7 +328,12 @@ fun ProfileScreen(hasActions: Boolean = true, hasNavigationIcons: Boolean = true
                     }
 
                     Button(
-                        onClick = {},
+                        onClick = {
+                            coroutineScope.launch {
+                                viewModel.updateUser()
+                                navigateBack()
+                            }
+                        },
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = LittleLemonColor.primary2)
                     ) {
@@ -296,4 +345,3 @@ fun ProfileScreen(hasActions: Boolean = true, hasNavigationIcons: Boolean = true
 
     }
 }
-

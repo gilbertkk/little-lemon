@@ -9,11 +9,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyTopAppBar(hasActions: Boolean = false, hasNavigationIcon: Boolean = false, navController: NavController) {
+fun TopAppBar(
+    hasNavigateBack: Boolean = false,
+    hasNavigationIcon: Boolean = false,
+    navigateToUser: () -> Unit = {},
+    navigateBack: () -> Unit = {}
+) {
     CenterAlignedTopAppBar(
         title = {
             Image(
@@ -24,9 +28,9 @@ fun MyTopAppBar(hasActions: Boolean = false, hasNavigationIcon: Boolean = false,
             )
         },
         actions = {
-            if (hasActions) {
+            if (hasNavigateBack) {
                 IconButton(onClick = {
-                    navController.navigate(ProfileDestination.route)
+                    navigateToUser()
                 }) {
                     Image(
                         painter = painterResource(id = R.drawable.profile),
@@ -39,7 +43,7 @@ fun MyTopAppBar(hasActions: Boolean = false, hasNavigationIcon: Boolean = false,
             if (hasNavigationIcon) {
                 IconButton(
                     onClick = {
-                        navController.popBackStack()
+                        navigateBack()
                     }
                 ) {
                     Image(
