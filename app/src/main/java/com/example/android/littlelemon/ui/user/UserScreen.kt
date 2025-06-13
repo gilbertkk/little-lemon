@@ -1,7 +1,12 @@
 package com.example.android.littlelemon.ui.user
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -33,18 +38,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.rememberAsyncImagePainter
 import com.example.android.littlelemon.R
 import com.example.android.littlelemon.TopAppBar
 import com.example.android.littlelemon.ui.theme.LittleLemonColor
 import com.example.android.littlelemon.ui.theme.LittleLemonTextStyle
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
@@ -52,13 +63,30 @@ fun UserScreen(
     hasActions: Boolean = true,
     hasNavigationIcons: Boolean = true,
     viewModel: UserViewModel = viewModel(),
-    navigateBack: () -> Unit = {}
+    navigateBack: () -> Unit = {},
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    val pickImageLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri: Uri? ->
+            uri?.let {
+                coroutineScope.launch(Dispatchers.IO) {
+                    viewModel.updateUseUiState(viewModel.userDetails.copy(profileImage = uri))
+                }
+            }
+        }
+    )
 
     Log.d("debugging", "in userScreen composable")
     Scaffold(
-        topBar = { TopAppBar(hasActions, hasNavigationIcons,navigateBack = navigateBack ) },
+        topBar = {
+            TopAppBar(hasActions,
+                hasNavigationIcons,
+                navigateBack = navigateBack,
+                userDetails = viewModel.userDetails)
+        },
         modifier = Modifier
             .fillMaxSize(),
     ) { paddingValues ->
@@ -92,8 +120,12 @@ fun UserScreen(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    var imagePainter: Painter = painterResource(R.drawable.profile)
+                    if (viewModel.userDetails.profileImage != null) {
+                        imagePainter = rememberAsyncImagePainter( viewModel.userDetails.profileImage)
+                    }
                     Image(
-                        painter = painterResource(R.drawable.profile),
+                        painter = imagePainter,
                         contentDescription = stringResource(R.string.profile_screen_profile_image_description),
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
@@ -101,7 +133,13 @@ fun UserScreen(
                             .clip(CircleShape)
                     )
                     Button(
-                        onClick = {},
+                        onClick = {
+                            pickImageLauncher.launch(
+                                PickVisualMediaRequest (
+                                    ActivityResultContracts.PickVisualMedia.ImageOnly
+                                )
+                            )
+                        },
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = LittleLemonColor.primary2),
                         modifier = Modifier
@@ -111,7 +149,9 @@ fun UserScreen(
                         Text(text = stringResource(R.string.profile_screen_button_change))
                     }
                     OutlinedButton(
-                        onClick = {},
+                        onClick = {
+                            viewModel.removeProfileImage()
+                        },
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Gray)
                     ) {
@@ -295,7 +335,9 @@ fun UserScreen(
 
                 // ************** LOWER PART BUTTONS SECTION ****************************
                 Button(
-                    onClick = {},
+                    onClick = {
+                        viewModel.logout()
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = LittleLemonColor.primary1),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
@@ -329,10 +371,18 @@ fun UserScreen(
 
                     Button(
                         onClick = {
-                            coroutineScope.launch {
-                                viewModel.updateUser()
-                                navigateBack()
+                            coroutineScope.launch(Dispatchers.IO) {
+                                val userImageUri = viewModel.userDetails.profileImage
+                                if (userImageUri == null) {
+                                    viewModel.updateUser(null)
+                                } else {
+                                    val storedImagePath = saveImageToInternalStorage(context, userImageUri)
+                                    storedImagePath?.let { imagePath ->
+                                        viewModel.updateUser(imagePath)
+                                    }
+                                }
                             }
+                            navigateBack()
                         },
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = LittleLemonColor.primary2)
@@ -343,5 +393,23 @@ fun UserScreen(
             }
         }
 
+    }
+}
+
+// function to save image in internal storage
+fun saveImageToInternalStorage(context: Context, uri: Uri): String? {
+    return try {
+        val inputStream = context.contentResolver.openInputStream(uri)
+        val fileName = "profile_image.jpg" // Unique name for the file
+        val file = File(context.filesDir, fileName) // Obtain the internal dir
+
+        FileOutputStream(file).use { outputStream ->
+            inputStream?.copyTo(outputStream)
+        }
+        inputStream?.close()
+        file.absolutePath // Return the absolute file path
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
     }
 }
