@@ -22,6 +22,7 @@ class UserViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
 
     private var userUiStateBackup: UserUiState = UserUiState()
 
+
     init {
         Log.d("debugging", "userId from userViewModel: $userId")
         viewModelScope.launch {
@@ -41,8 +42,10 @@ class UserViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
     /**
      *  Update the user in the database
      */
-    suspend fun updateUser() {
-        appRepository.updateUser(userUiState.userDetails.toUser())
+    suspend fun updateUser(storedImagePath: String?) {
+        appRepository.updateUser(
+            userUiState.userDetails.toUser().copy(profileImage = storedImagePath)
+        )
     }
 
     /**
@@ -50,6 +53,16 @@ class UserViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
      */
     fun restoreUiState() {
         userUiState = userUiStateBackup
+    }
+
+    fun removeProfileImage() {
+        userUiState = UserUiState(userDetails = userUiState.userDetails.copy(profileImage = null))
+    }
+
+    fun logout() {
+        userUiState = UserUiState(
+            UserDetails(notificationOrderStatuses = false, notificationPasswordChanges = false, id = userId)
+        )
     }
 
 

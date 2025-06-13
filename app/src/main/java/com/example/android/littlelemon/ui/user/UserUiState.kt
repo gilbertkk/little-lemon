@@ -14,8 +14,8 @@ data class UserDetails (
     val phoneNumber: String = "",
     val notificationOrderStatuses: Boolean = true,
     val notificationPasswordChanges: Boolean = true,
-    val notificationSpecialOffers: Boolean = true,
-    val notificationNewsletter: Boolean = true,
+    val notificationSpecialOffers: Boolean = false,
+    val notificationNewsletter: Boolean = false,
     val profileImage: Uri? = null
 )
 
@@ -28,7 +28,7 @@ fun UserDetails.toUser() : User = User(
     notificationPasswordChanges = notificationPasswordChanges,
     notificationSpecialOffers = notificationSpecialOffers,
     notificationNewsletter = notificationNewsletter,
-    profileImage = profileImage.toString()
+    profileImage = profileImage?.toString()
 )
 
 fun User.toUserDetails() : UserDetails = UserDetails(
