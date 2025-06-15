@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
@@ -43,12 +44,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.android.littlelemon.R
 import com.example.android.littlelemon.data.Categories
+import com.example.android.littlelemon.data.Category
 import com.example.android.littlelemon.data.Dish
 import com.example.android.littlelemon.data.dishes
 import com.example.android.littlelemon.ui.TopAppBar
@@ -79,8 +82,17 @@ fun HomeScreen(
         Column (modifier = Modifier
             .padding(paddingValues)
         ) {
-            HomeScreenUpper { AppSearchBar() }
-            HomeScreenLower()
+            HomeScreenUpper (searchBar ={ AppSearchBar() })
+            HomeScreenLower(
+                dishes = viewModel.dishList,
+                categorizeDishes = {category ->
+                    viewModel.dishList = if (category == "All") {
+                        dishes
+                    } else {
+                        dishes.filter {
+                            it.category.catName == category }
+                    }
+                })
         }
     }
 }
@@ -115,14 +127,13 @@ fun HomeScreenUpper(searchBar: @Composable (() -> Unit)? = null) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 8.dp)
         ) {
             Text(
                 text = stringResource(id = R.string.home_screen_description),
                 style = LittleLemonTextStyle.leadText,
                 color = LittleLemonColor.highlight1,
                 modifier = Modifier
-                    .padding(end = 16.dp, top = 16.dp)
+                    .padding(end = 16.dp, top = 8.dp)
                     .height(150.dp)
                     .fillMaxWidth(0.60f)
             )
@@ -152,6 +163,7 @@ fun AppSearchBar() {
         OutlinedTextField (
             value = searchInput,
             onValueChange = {searchInput = it },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             shape = RoundedCornerShape(8.dp),
             colors = OutlinedTextFieldDefaults.colors(unfocusedBorderColor = LittleLemonColor.primary2),
             leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = "search icon") },
@@ -162,22 +174,23 @@ fun AppSearchBar() {
 }
 
 @Composable
-fun HomeScreenLower() {
+fun HomeScreenLower(dishes: List<Dish>, categorizeDishes: (String) -> Unit) {
     Column(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(24.dp)
+            .padding(bottom = 8.dp, start = 24.dp, end = 24.dp)
     ) {
         Text(
             text = stringResource(id = R.string.home_screen_section_title).uppercase(),
             style = LittleLemonTextStyle.sectionTitle,
-            color = Color.Black
+            color = Color.Black,
+            modifier = Modifier.padding(top = 8.dp)
         )
         LazyRow {
             items(Categories) { category ->
-                MenuCategory(category)
+                MenuCategory(category, onClick = categorizeDishes)
             }
         }
         HorizontalDivider(
@@ -194,24 +207,24 @@ fun HomeScreenLower() {
 }
 
 @Composable
-fun MenuCategory(category: String) {
+fun MenuCategory(category: Category, onClick: (String) -> Unit) {
     Button(
-        onClick = {},
+        onClick = {
+            onClick(category.catName)
+        },
         colors = ButtonDefaults.buttonColors(containerColor  = Color(0xFFACADAC)),
         shape = RoundedCornerShape(40),
         modifier = Modifier
             .padding(5.dp)
     ) {
-        Text(text=category, color = Color.Black)
+        Text(text=category.catName, color = Color.Black)
     }
 }
-
-//val categories = listOf<String>("Starters", "Mains", "Desserts", "Drinks")
 
 @Composable
 fun MenuDish(dish: Dish) {
     Card (
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
     ){
         Row(
             verticalAlignment = Alignment.CenterVertically,

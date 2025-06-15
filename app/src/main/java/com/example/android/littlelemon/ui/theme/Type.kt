@@ -49,13 +49,13 @@ object LittleLemonTextStyle  {
     val displayTitle = TextStyle(
         fontFamily = markaziFontFamily,
         fontWeight = FontWeight.Medium,
-        fontSize = 64.sp
+        fontSize = 56.sp
     )
 
     val subTitle = TextStyle(
         fontFamily = markaziFontFamily,
         fontWeight = FontWeight.Normal,
-        fontSize = 40.sp
+        fontSize = 42.sp
     )
 
     val leadText = TextStyle(
@@ -67,7 +67,7 @@ object LittleLemonTextStyle  {
     val sectionTitle = TextStyle(
         fontFamily = karlaFontFamily,
         fontWeight = FontWeight.ExtraBold,
-        fontSize = 20.sp
+        fontSize = 18.sp
     )
 
     val sectionCategories = TextStyle(
