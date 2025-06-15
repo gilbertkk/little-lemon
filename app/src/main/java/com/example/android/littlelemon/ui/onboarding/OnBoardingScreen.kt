@@ -1,7 +1,6 @@
 package com.example.android.littlelemon.ui.onboarding
 
 import android.content.Context.MODE_PRIVATE
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -34,23 +34,28 @@ import com.example.android.littlelemon.R
 import com.example.android.littlelemon.SHARED_PREFERENCES_FILE_NAME
 import com.example.android.littlelemon.SHARED_PREFERENCES_IS_ONBOARDED
 import com.example.android.littlelemon.SHARED_PREFERENCES_USER_ID
-import com.example.android.littlelemon.TopAppBar
 import com.example.android.littlelemon.data.AppRepository
 import com.example.android.littlelemon.data.User
+import com.example.android.littlelemon.ui.TopAppBar
 import com.example.android.littlelemon.ui.home.HomeScreenUpper
 import com.example.android.littlelemon.ui.theme.LittleLemonColor
 import com.example.android.littlelemon.ui.theme.LittleLemonTextStyle
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.launch
 
 @Composable
 fun OnBoardingScreen(
     hasActions: Boolean = false,
     hasNavigationIcons: Boolean = false,
-    navigateToHome: () -> Unit
+    navigateToHome: (userId: Int) -> Unit
 ) {
     val context = LocalContext.current
     val sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_FILE_NAME, MODE_PRIVATE)
     val appRepository by lazy { AppRepository.get() }
+
+    val coroutineScope = rememberCoroutineScope()
+
+    var name by rememberSaveable { mutableStateOf("") }
+    var email by rememberSaveable { mutableStateOf("") }
 
     Scaffold(
         topBar = { TopAppBar(hasActions, hasNavigationIcons) },
@@ -64,8 +69,7 @@ fun OnBoardingScreen(
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
         ) {
-            var name by rememberSaveable { mutableStateOf("") }
-            var email by rememberSaveable { mutableStateOf("") }
+
             HomeScreenUpper()
             Column(
                 modifier = Modifier
@@ -107,28 +111,22 @@ fun OnBoardingScreen(
                 )
                 Button(
                     onClick = {
-                        var userId = 0
-                        val user = User(id =userId, firstname = name, email = email)
+                        coroutineScope.launch {
+                            val userIdLong: Long = (appRepository.insert(
+                                User(firstname = name, email = email)
+                            ))
+                            val userId = userIdLong.toInt()
+                            if (userId > 0) {
+                                sharedPreferences.edit()
+                                    .putBoolean(SHARED_PREFERENCES_IS_ONBOARDED, true)
+                                    .putInt(SHARED_PREFERENCES_USER_ID, userId)
+                                    .apply()
 
-                        runBlocking {
-                            appRepository.insert(user)
+                                navigateToHome(userId)
+                            }else {
+                                throw Exception("Failed to create the user in the database")
+                            }
                         }
-                        Log.d("debugging", "form validate button after user insertion")
-                        runBlocking {
-                            userId =  appRepository.getAllUsers().first().id
-                        }
-
-                        Log.d("debugging", "form validate button after users uploading, id = $userId")
-
-                        sharedPreferences.edit()
-                            .putBoolean(SHARED_PREFERENCES_IS_ONBOARDED, true)
-                            .putInt(SHARED_PREFERENCES_USER_ID, userId)
-                            .apply()
-
-                        Log.d("debugging", "form validate button after sharedPreferences setting up")
-
-                        navigateToHome()
-                        Log.d("debugging", "form validate button after navigating to Home")
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = LittleLemonColor.primary2),
                     shape = RoundedCornerShape(8.dp),

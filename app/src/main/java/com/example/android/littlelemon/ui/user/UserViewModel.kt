@@ -3,6 +3,7 @@ package com.example.android.littlelemon.ui.user
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -22,6 +23,8 @@ class UserViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
 
     private var userUiStateBackup: UserUiState = UserUiState()
 
+    var isNewUriToStore by mutableStateOf(false)
+
 
     init {
         Log.d("debugging", "userId from userViewModel: $userId")
@@ -35,7 +38,7 @@ class UserViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
     /**
      *  Update the userUiState from UserScreen
      */
-    fun updateUseUiState(userDetails: UserDetails) {
+    fun updateUserUiState(userDetails: UserDetails) {
        userUiState = UserUiState(userDetails = userDetails)
     }
 
@@ -53,6 +56,7 @@ class UserViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
      */
     fun restoreUiState() {
         userUiState = userUiStateBackup
+        isNewUriToStore = false
     }
 
     fun removeProfileImage() {
@@ -63,6 +67,7 @@ class UserViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
         userUiState = UserUiState(
             UserDetails(notificationOrderStatuses = false, notificationPasswordChanges = false, id = userId)
         )
+        isNewUriToStore = false
     }
 
 

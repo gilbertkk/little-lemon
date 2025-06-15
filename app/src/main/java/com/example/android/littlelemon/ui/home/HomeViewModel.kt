@@ -1,0 +1,32 @@
+package com.example.android.littlelemon.ui.home
+
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.android.littlelemon.data.AppRepository
+import com.example.android.littlelemon.ui.navigation.HomeDestination
+import com.example.android.littlelemon.ui.user.UserUiState
+import com.example.android.littlelemon.ui.user.toUserUiState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+
+class HomeViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
+    private val appRepository = AppRepository.get()
+
+    val userId: Int = checkNotNull(savedStateHandle[HomeDestination.ARG_USER_ID])
+
+
+    private val _userUiState: MutableStateFlow<UserUiState> = MutableStateFlow(UserUiState())
+    val userUiState: StateFlow<UserUiState> = _userUiState.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            appRepository.getUserStream(userId).collect {
+                _userUiState.value = it.toUserUiState()
+            }
+        }
+    }
+
+}
