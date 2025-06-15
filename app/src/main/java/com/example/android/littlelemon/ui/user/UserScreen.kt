@@ -33,6 +33,11 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,7 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.android.littlelemon.R
-import com.example.android.littlelemon.TopAppBar
+import com.example.android.littlelemon.ui.TopAppBar
 import com.example.android.littlelemon.ui.theme.LittleLemonColor
 import com.example.android.littlelemon.ui.theme.LittleLemonTextStyle
 import kotlinx.coroutines.Dispatchers
@@ -68,12 +73,14 @@ fun UserScreen(
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
 
+
     val pickImageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri: Uri? ->
             uri?.let {
                 coroutineScope.launch(Dispatchers.IO) {
-                    viewModel.updateUseUiState(viewModel.userDetails.copy(profileImage = uri))
+                    viewModel.updateUserUiState(viewModel.userDetails.copy(profileImage = uri))
+                    viewModel.isNewUriToStore = true
                 }
             }
         }
@@ -85,7 +92,7 @@ fun UserScreen(
             TopAppBar(hasActions,
                 hasNavigationIcons,
                 navigateBack = navigateBack,
-                userDetails = viewModel.userDetails)
+                userProfileImage = viewModel.userDetails.profileImage)
         },
         modifier = Modifier
             .fillMaxSize(),
@@ -120,12 +127,12 @@ fun UserScreen(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    var imagePainter: Painter = painterResource(R.drawable.profile)
-                    if (viewModel.userDetails.profileImage != null) {
-                        imagePainter = rememberAsyncImagePainter( viewModel.userDetails.profileImage)
-                    }
                     Image(
-                        painter = imagePainter,
+                        painter = if (viewModel.userDetails.profileImage == null) {
+                            painterResource(R.drawable.profile)
+                        } else {
+                            rememberAsyncImagePainter(viewModel.userDetails.profileImage)
+                        },
                         contentDescription = stringResource(R.string.profile_screen_profile_image_description),
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
@@ -166,7 +173,7 @@ fun UserScreen(
                 OutlinedTextField(
                     value = viewModel.userDetails.firstname,
                     onValueChange = {
-                        viewModel.updateUseUiState(
+                        viewModel.updateUserUiState(
                             viewModel.userDetails.copy(firstname = it)
                         )
                     },
@@ -184,7 +191,7 @@ fun UserScreen(
                 OutlinedTextField(
                     value = viewModel.userDetails.lastname,
                     onValueChange = {
-                        viewModel.updateUseUiState(
+                        viewModel.updateUserUiState(
                             viewModel.userDetails.copy(lastname = it)
                         )
                     },
@@ -201,7 +208,7 @@ fun UserScreen(
                 OutlinedTextField(
                     value = viewModel.userDetails.email,
                     onValueChange = {
-                        viewModel.updateUseUiState(
+                        viewModel.updateUserUiState(
                             viewModel.userDetails.copy(email = it)
                         )
                     },
@@ -218,7 +225,7 @@ fun UserScreen(
                 OutlinedTextField(
                     value = viewModel.userDetails.phoneNumber,
                     onValueChange = {
-                        viewModel.updateUseUiState(
+                        viewModel.updateUserUiState(
                             viewModel.userDetails.copy(phoneNumber = it)
                         )
                     },
@@ -245,7 +252,7 @@ fun UserScreen(
                     Checkbox(
                         checked = viewModel.userDetails.notificationOrderStatuses,
                         onCheckedChange = {
-                            viewModel.updateUseUiState(
+                            viewModel.updateUserUiState(
                                 viewModel.userDetails.copy(notificationOrderStatuses =
                                 !viewModel.userDetails.notificationOrderStatuses)
                             )
@@ -269,7 +276,7 @@ fun UserScreen(
                     Checkbox(
                         checked = viewModel.userDetails.notificationPasswordChanges,
                         onCheckedChange = {
-                            viewModel.updateUseUiState(
+                            viewModel.updateUserUiState(
                                 viewModel.userDetails.copy(notificationPasswordChanges =
                                 !viewModel.userDetails.notificationPasswordChanges)
                             )
@@ -293,7 +300,7 @@ fun UserScreen(
                     Checkbox(
                         checked = viewModel.userDetails.notificationSpecialOffers,
                         onCheckedChange = {
-                            viewModel.updateUseUiState(
+                            viewModel.updateUserUiState(
                                 viewModel.userDetails.copy(notificationSpecialOffers =
                                 !viewModel.userDetails.notificationSpecialOffers)
                             )
@@ -317,7 +324,7 @@ fun UserScreen(
                     Checkbox(
                         checked = viewModel.userDetails.notificationNewsletter,
                         onCheckedChange = {
-                            viewModel.updateUseUiState(
+                            viewModel.updateUserUiState(
                                 viewModel.userDetails.copy(notificationNewsletter =
                                 !viewModel.userDetails.notificationNewsletter)
                             )
@@ -371,16 +378,20 @@ fun UserScreen(
 
                     Button(
                         onClick = {
-                            coroutineScope.launch(Dispatchers.IO) {
-                                val userImageUri = viewModel.userDetails.profileImage
-                                if (userImageUri == null) {
-                                    viewModel.updateUser(null)
+                            coroutineScope.launch {
+                                Log.d("debugging", "Updating user: profileImage(Uri?): ${viewModel.userDetails.profileImage}")
+                                var imagePath: String? = null
+                                imagePath = if (viewModel.isNewUriToStore) {
+                                    saveImageToInternalStorage(
+                                        context, viewModel.userDetails.profileImage
+                                    )
+                                } else if (viewModel.userDetails.profileImage != null) {
+                                    viewModel.userDetails.profileImage.toString()
                                 } else {
-                                    val storedImagePath = saveImageToInternalStorage(context, userImageUri)
-                                    storedImagePath?.let { imagePath ->
-                                        viewModel.updateUser(imagePath)
-                                    }
+                                    null
                                 }
+
+                                viewModel.updateUser(imagePath)
                             }
                             navigateBack()
                         },
@@ -397,19 +408,23 @@ fun UserScreen(
 }
 
 // function to save image in internal storage
-fun saveImageToInternalStorage(context: Context, uri: Uri): String? {
-    return try {
-        val inputStream = context.contentResolver.openInputStream(uri)
-        val fileName = "profile_image.jpg" // Unique name for the file
-        val file = File(context.filesDir, fileName) // Obtain the internal dir
+fun saveImageToInternalStorage(context: Context, uri: Uri?): String? {
+    if (uri == null) {
+        return null
+    } else {
+        return try {
+            val inputStream = context.contentResolver.openInputStream(uri)
+            val fileName = "profile_image.jpg" // Unique name for the file
+            val file = File(context.filesDir, fileName) // Create the file in the internal storage
 
-        FileOutputStream(file).use { outputStream ->
-            inputStream?.copyTo(outputStream)
+            FileOutputStream(file).use { outputStream ->
+                inputStream?.copyTo(outputStream)
+            }
+            inputStream?.close()
+            file.absolutePath // Return the absolute file path
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
-        inputStream?.close()
-        file.absolutePath // Return the absolute file path
-    } catch (e: Exception) {
-        e.printStackTrace()
-        null
     }
 }

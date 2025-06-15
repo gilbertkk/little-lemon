@@ -5,9 +5,10 @@ import android.content.Context
 class AppRepository private constructor(context: Context) {
     private val database: AppDatabase = AppDatabase.getDatabase(context)
 
-    suspend fun insert(user: User) = database.userDao().insertUser(user)
+    suspend fun insert(user: User) : Long = database.userDao().insertUser(user)
     suspend fun updateUser(user: User) = database.userDao().updateUser(user)
     suspend fun getUser(userId: Int) = database.userDao().getUser(userId)
+    fun getUserStream(userId: Int) = database.userDao().getUserStream(userId)
     suspend fun getAllUsers() = database.userDao().getAllUsers()
 
     companion object {

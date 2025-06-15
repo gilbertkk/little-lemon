@@ -1,5 +1,6 @@
-package com.example.android.littlelemon
+package com.example.android.littlelemon.ui
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
@@ -15,7 +16,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
-import com.example.android.littlelemon.ui.user.UserDetails
+import com.example.android.littlelemon.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,7 +25,7 @@ fun TopAppBar(
     hasNavigationIcon: Boolean = false,
     navigateToUser: () -> Unit = {},
     navigateBack: () -> Unit = {},
-    userDetails: UserDetails = UserDetails()
+    userProfileImage: Uri? = null
 ) {
     CenterAlignedTopAppBar(
         title = {
@@ -41,8 +42,8 @@ fun TopAppBar(
                     navigateToUser()
                 }) {
                     var imagePainter: Painter = painterResource(R.drawable.profile)
-                    if (userDetails.profileImage != null) {
-                        imagePainter = rememberAsyncImagePainter(userDetails.profileImage)
+                    if (userProfileImage != null) {
+                        imagePainter = rememberAsyncImagePainter(userProfileImage)
                     }
                     Image(
                         painter = imagePainter,

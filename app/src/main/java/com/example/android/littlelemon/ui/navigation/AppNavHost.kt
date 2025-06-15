@@ -25,19 +25,23 @@ fun AppNavHost(
     Log.d("debugging", "after init sharedpref")
     val isOnboarded = sharedPreferences.getBoolean("isOnboarded", false)
     Log.d("debugging", "after getting onBoarding, isOnboarded = $isOnboarded")
-    val startDestination = if (isOnboarded) HomeDestination.route else OnboardingDestination.route
-    Log.d("debugging", "startDestination = $startDestination")
     val userId: Int = sharedPreferences.getInt(SHARED_PREFERENCES_USER_ID, 0)
+    val startDestination = if (isOnboarded) HomeDestination.routeWithEffectiveArgs(userId) else OnboardingDestination.route
+    Log.d("debugging", "startDestination = $startDestination")
+
 
     Log.d("debugging", "userId= $userId, onBoarded= $isOnboarded")
 
     NavHost(navController = navController, startDestination = startDestination, modifier = modifier) {
 
-        composable(route = HomeDestination.route) {
+        composable(
+            route = HomeDestination.routeWithArgs,
+            arguments = listOf(
+                navArgument(HomeDestination.ARG_USER_ID) {type = NavType.IntType}
+            )
+        ) {
             HomeScreen(
-                navigateToUser = {
-                    navController.navigate(UserDestination.routeWithEffectiveArgs(userId))
-                },
+                navController = navController
             )
         }
 
@@ -47,12 +51,14 @@ fun AppNavHost(
                 type = NavType.IntType
             })
         ) {
-            UserScreen(navigateBack = {navController.popBackStack()})
+            UserScreen(
+                navigateBack = { navController.popBackStack()}
+            )
         }
 
         composable(route = OnboardingDestination.route) {
-            OnBoardingScreen(navigateToHome = {
-                navController.navigate(HomeDestination.route) {
+            OnBoardingScreen(navigateToHome = { userId ->
+                navController.navigate(HomeDestination.routeWithEffectiveArgs(userId)) {
                     popUpTo(OnboardingDestination.route) {
                         inclusive = true
                     }
