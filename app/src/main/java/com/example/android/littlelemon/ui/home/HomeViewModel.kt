@@ -1,9 +1,13 @@
 package com.example.android.littlelemon.ui.home
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.android.littlelemon.data.AppRepository
+import com.example.android.littlelemon.data.dishes
 import com.example.android.littlelemon.ui.navigation.HomeDestination
 import com.example.android.littlelemon.ui.user.UserUiState
 import com.example.android.littlelemon.ui.user.toUserUiState
@@ -17,9 +21,10 @@ class HomeViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
 
     val userId: Int = checkNotNull(savedStateHandle[HomeDestination.ARG_USER_ID])
 
-
     private val _userUiState: MutableStateFlow<UserUiState> = MutableStateFlow(UserUiState())
     val userUiState: StateFlow<UserUiState> = _userUiState.asStateFlow()
+
+    var dishList by mutableStateOf(dishes)
 
     init {
         viewModelScope.launch {
