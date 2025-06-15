@@ -9,7 +9,6 @@ class AppRepository private constructor(context: Context) {
     suspend fun updateUser(user: User) = database.userDao().updateUser(user)
     suspend fun getUser(userId: Int) = database.userDao().getUser(userId)
     fun getUserStream(userId: Int) = database.userDao().getUserStream(userId)
-    suspend fun getAllUsers() = database.userDao().getAllUsers()
 
     companion object {
         private var INSTANCE: AppRepository? = null

@@ -3,7 +3,6 @@ package com.example.android.littlelemon.ui.user
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -44,6 +44,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
@@ -80,7 +81,6 @@ fun UserScreen(
         }
     )
 
-    Log.d("debugging", "in userScreen composable")
     Scaffold(
         topBar = {
             TopAppBar(hasActions,
@@ -171,6 +171,7 @@ fun UserScreen(
                             viewModel.userDetails.copy(firstname = it)
                         )
                     },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -189,6 +190,7 @@ fun UserScreen(
                             viewModel.userDetails.copy(lastname = it)
                         )
                     },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -206,6 +208,7 @@ fun UserScreen(
                             viewModel.userDetails.copy(email = it)
                         )
                     },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -223,6 +226,7 @@ fun UserScreen(
                             viewModel.userDetails.copy(phoneNumber = it)
                         )
                     },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()

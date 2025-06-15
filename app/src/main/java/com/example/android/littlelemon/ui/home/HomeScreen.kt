@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
@@ -43,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -65,7 +67,6 @@ fun HomeScreen(
     viewModel: HomeViewModel = viewModel()
 ) {
     val userUiState by viewModel.userUiState.collectAsStateWithLifecycle()
-    //var dishList by rememberSaveable { mutableStateOf(dishes) }
 
     Scaffold(
         topBar = {
@@ -162,6 +163,7 @@ fun AppSearchBar() {
         OutlinedTextField (
             value = searchInput,
             onValueChange = {searchInput = it },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             shape = RoundedCornerShape(8.dp),
             colors = OutlinedTextFieldDefaults.colors(unfocusedBorderColor = LittleLemonColor.primary2),
             leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = "search icon") },
