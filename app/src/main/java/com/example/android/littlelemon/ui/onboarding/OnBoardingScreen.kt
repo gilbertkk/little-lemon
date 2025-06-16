@@ -1,6 +1,7 @@
 package com.example.android.littlelemon.ui.onboarding
 
 import android.content.Context.MODE_PRIVATE
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -116,20 +117,28 @@ fun OnBoardingScreen(
                 )
                 Button(
                     onClick = {
-                        coroutineScope.launch {
-                            val userIdLong: Long = (appRepository.insert(
-                                User(firstname = name, email = email)
-                            ))
-                            val userId = userIdLong.toInt()
-                            if (userId > 0) {
-                                sharedPreferences.edit()
-                                    .putBoolean(SHARED_PREFERENCES_IS_ONBOARDED, true)
-                                    .putInt(SHARED_PREFERENCES_USER_ID, userId)
-                                    .apply()
+                        if (name.isEmpty() || email.isEmpty()) {
+                            Toast.makeText(
+                                context,
+                                "The fields Name and/or Email are required.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            coroutineScope.launch {
+                                val userIdLong: Long = (appRepository.insert(
+                                    User(firstname = name, email = email)
+                                ))
+                                val userId = userIdLong.toInt()
+                                if (userId > 0) {
+                                    sharedPreferences.edit()
+                                        .putBoolean(SHARED_PREFERENCES_IS_ONBOARDED, true)
+                                        .putInt(SHARED_PREFERENCES_USER_ID, userId)
+                                        .apply()
 
-                                navigateToHome(userId)
-                            }else {
-                                throw Exception("Failed to create the user in the database")
+                                    navigateToHome(userId)
+                                }else {
+                                    throw Exception("Failed to create the user in the database")
+                                }
                             }
                         }
                     },
@@ -146,6 +155,5 @@ fun OnBoardingScreen(
 
         }
     }
-
-
 }
+
