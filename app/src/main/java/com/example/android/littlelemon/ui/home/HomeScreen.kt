@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -42,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -82,7 +84,11 @@ fun HomeScreen(
         Column (modifier = Modifier
             .padding(paddingValues)
         ) {
-            HomeScreenUpper (searchBar ={ AppSearchBar() })
+            HomeScreenUpper (searchBar ={ AppSearchBar { searchWord ->
+                viewModel.dishList =
+                    dishes.filter { it.name.lowercase().contains(searchWord.trim().lowercase()) }
+                }
+            })
             HomeScreenLower(
                 dishes = viewModel.dishList,
                 categorizeDishes = {category ->
@@ -151,8 +157,9 @@ fun HomeScreenUpper(searchBar: @Composable (() -> Unit)? = null) {
 }
 
 @Composable
-fun AppSearchBar() {
+fun AppSearchBar(onSearch: (search: String) -> Unit) {
     var searchInput by rememberSaveable { mutableStateOf("") }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Surface(
         shape = RoundedCornerShape(8.dp),
@@ -162,8 +169,14 @@ fun AppSearchBar() {
     ) {
         OutlinedTextField (
             value = searchInput,
-            onValueChange = {searchInput = it },
+            onValueChange = { searchInput = it },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    onSearch(searchInput)
+                    keyboardController?.hide()
+                }
+            ),
             shape = RoundedCornerShape(8.dp),
             colors = OutlinedTextFieldDefaults.colors(unfocusedBorderColor = LittleLemonColor.primary2),
             leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = "search icon") },
