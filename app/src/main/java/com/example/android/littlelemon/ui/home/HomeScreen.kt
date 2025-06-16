@@ -212,7 +212,7 @@ fun MenuCategory(category: Category, onClick: (String) -> Unit) {
         onClick = {
             onClick(category.catName)
         },
-        colors = ButtonDefaults.buttonColors(containerColor  = Color(0xFFACADAC)),
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFACADAC)),
         shape = RoundedCornerShape(40),
         modifier = Modifier
             .padding(5.dp)
