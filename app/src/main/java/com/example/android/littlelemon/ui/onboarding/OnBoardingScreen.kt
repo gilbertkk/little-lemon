@@ -2,8 +2,10 @@ package com.example.android.littlelemon.ui.onboarding
 
 import android.content.Context.MODE_PRIVATE
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,6 +33,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.android.littlelemon.R
 import com.example.android.littlelemon.SHARED_PREFERENCES_FILE_NAME
@@ -39,7 +42,6 @@ import com.example.android.littlelemon.SHARED_PREFERENCES_USER_ID
 import com.example.android.littlelemon.data.AppRepository
 import com.example.android.littlelemon.data.User
 import com.example.android.littlelemon.ui.TopAppBar
-import com.example.android.littlelemon.ui.home.HomeScreenUpper
 import com.example.android.littlelemon.ui.theme.LittleLemonColor
 import com.example.android.littlelemon.ui.theme.LittleLemonTextStyle
 import kotlinx.coroutines.launch
@@ -48,7 +50,7 @@ import kotlinx.coroutines.launch
 fun OnBoardingScreen(
     hasActions: Boolean = false,
     hasNavigationIcons: Boolean = false,
-    navigateToHome: (userId: Int) -> Unit
+    navigateToHome: (userId: Int) -> Unit = {}
 ) {
     val context = LocalContext.current
     val sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_FILE_NAME, MODE_PRIVATE)
@@ -56,44 +58,85 @@ fun OnBoardingScreen(
 
     val coroutineScope = rememberCoroutineScope()
 
-    var name by rememberSaveable { mutableStateOf("") }
+    var firstname by rememberSaveable { mutableStateOf("") }
+    var lastname by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
 
     Scaffold(
         topBar = { TopAppBar(hasActions, hasNavigationIcons) },
         modifier = Modifier
-            .fillMaxSize(),
+
     ) { paddingValues ->
         Column(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start,
             modifier = Modifier
                 .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
+                .fillMaxSize()
         ) {
 
-            HomeScreenUpper()
-            Column(
+            Box (
+                contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(120.dp)
+                    .background(LittleLemonColor.primary2)
+            ){
+                Text(
+                    text = stringResource(id = R.string.onboarding_text_welcoming),
+                    style = LittleLemonTextStyle.subTitle,
+                    color = Color.White
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
                     .padding(start = 16.dp, end = 16.dp)
+                    .verticalScroll(rememberScrollState())
+
             ) {
                 Text(
-                    text = stringResource(R.string.onboarding_name),
+                    text = stringResource(R.string.onboarding_personal_info),
+                    style = LittleLemonTextStyle.sectionTitle,
+                    color = Color.Black,
+                    modifier = Modifier
+                        .padding(top = 32.dp, bottom = 32.dp),
+                )
+
+                Text(
+                    text = stringResource(R.string.onboarding_firstname),
                     style = LittleLemonTextStyle.leadText,
                     color = LittleLemonColor.highlight2,
                     modifier = Modifier
                         .padding(top = 8.dp),
                 )
                 OutlinedTextField (
-                    value = name,
-                    onValueChange = { name = it },
+                    value = firstname,
+                    onValueChange = { firstname = it },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 8.dp)
-                        .background(Color.White)
+                        .background(Color.White, shape = RoundedCornerShape((8.dp)))
+                )
+                Text(
+                    text = stringResource(R.string.onboarding_lastname),
+                    style = LittleLemonTextStyle.leadText,
+                    color = LittleLemonColor.highlight2,
+                    modifier = Modifier
+                        .padding(top = 8.dp),
+                )
+                OutlinedTextField (
+                    value = lastname,
+                    onValueChange = { lastname = it },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
+                        .background(Color.White, shape = RoundedCornerShape(8.dp))
                 )
                 Text(
                     text = stringResource(R.string.onboarding_email),
@@ -113,20 +156,20 @@ fun OnBoardingScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 8.dp)
-                        .background(Color.White)
+                        .background(Color.White, shape = RoundedCornerShape(8.dp))
                 )
                 Button(
                     onClick = {
-                        if (name.isEmpty() || email.isEmpty()) {
+                        if (firstname.isBlank() || lastname.isBlank() || email.isBlank()) {
                             Toast.makeText(
                                 context,
-                                "The fields Name and/or Email are required.",
+                                "Registration unsuccessful. Please enter all data.",
                                 Toast.LENGTH_SHORT
                             ).show()
                         } else {
                             coroutineScope.launch {
                                 val userIdLong: Long = (appRepository.insert(
-                                    User(firstname = name, email = email)
+                                    User(firstname = firstname, lastname = lastname, email = email)
                                 ))
                                 val userId = userIdLong.toInt()
                                 if (userId > 0) {
@@ -142,18 +185,28 @@ fun OnBoardingScreen(
                             }
                         }
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = LittleLemonColor.primary2),
+                    colors = ButtonDefaults.buttonColors(containerColor = LittleLemonColor.primary1),
                     shape = RoundedCornerShape(8.dp),
+                    border = BorderStroke(1.dp, Color.Gray),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 40.dp)
-                        .height(50.dp)
+                        .padding(top = 80.dp)
                 ) {
-                    Text(text = stringResource(R.string.onboarding_button_text))
+                    Text(
+                        text = stringResource(R.string.onboarding_register_button_text),
+                        color = Color.Black
+                    )
                 }
             }
 
         }
     }
 }
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun OnBoardingPreview() {
+    OnBoardingScreen()
+}
+
 
