@@ -50,14 +50,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import com.example.android.littlelemon.R
 import com.example.android.littlelemon.data.Categories
 import com.example.android.littlelemon.data.Category
 import com.example.android.littlelemon.data.Dish
 import com.example.android.littlelemon.data.dishes
 import com.example.android.littlelemon.ui.TopAppBar
-import com.example.android.littlelemon.ui.navigation.UserDestination
 import com.example.android.littlelemon.ui.theme.LittleLemonColor
 import com.example.android.littlelemon.ui.theme.LittleLemonTextStyle
 
@@ -65,7 +63,7 @@ import com.example.android.littlelemon.ui.theme.LittleLemonTextStyle
 fun HomeScreen(
     hasActions: Boolean = true,
     hasNavigationIcons: Boolean = false,
-    navController: NavHostController,
+    navigateToUser: (userId: Int) -> Unit = {},
     viewModel: HomeViewModel = viewModel()
 ) {
     val userUiState by viewModel.userUiState.collectAsStateWithLifecycle()
@@ -74,7 +72,7 @@ fun HomeScreen(
         topBar = {
             TopAppBar(
                 hasActions, hasNavigationIcons,
-                navigateToUser = { navController.navigate(UserDestination.routeWithEffectiveArgs(viewModel.userId))},
+                navigateToUser = { navigateToUser(viewModel.userId)},
                 userProfileImage = userUiState.userDetails.profileImage
             )
                  },

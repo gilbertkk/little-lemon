@@ -1,4 +1,4 @@
-package com.example.android.littlelemon.ui.user
+package com.example.android.littlelemon.ui.profile
 
 import android.net.Uri
 import androidx.core.net.toUri
