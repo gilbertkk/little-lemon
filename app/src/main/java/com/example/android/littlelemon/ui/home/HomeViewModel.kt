@@ -1,5 +1,6 @@
 package com.example.android.littlelemon.ui.home
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -9,8 +10,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.android.littlelemon.data.AppRepository
 import com.example.android.littlelemon.data.dishes
 import com.example.android.littlelemon.ui.navigation.HomeDestination
-import com.example.android.littlelemon.ui.user.UserUiState
-import com.example.android.littlelemon.ui.user.toUserUiState
+import com.example.android.littlelemon.ui.profile.UserUiState
+import com.example.android.littlelemon.ui.profile.toUserUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,7 +30,11 @@ class HomeViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
     init {
         viewModelScope.launch {
             appRepository.getUserStream(userId).collect {
-                _userUiState.value = it.toUserUiState()
+                it?.let {
+                    _userUiState.value = it.toUserUiState()
+                }
+
+
             }
         }
     }

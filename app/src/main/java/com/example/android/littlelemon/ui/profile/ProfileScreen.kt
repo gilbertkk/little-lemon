@@ -1,4 +1,4 @@
-package com.example.android.littlelemon.ui.user
+package com.example.android.littlelemon.ui.profile
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -33,7 +33,11 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -62,11 +66,13 @@ import java.io.FileOutputStream
 fun UserScreen(
     hasActions: Boolean = true,
     hasNavigationIcons: Boolean = true,
-    viewModel: UserViewModel = viewModel(),
+    viewModel: ProfileViewModel = viewModel(),
     navigateBack: () -> Unit = {},
+    navigateToOnBoarding: (userDeletedId: Int) -> Unit = {}
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
+    var isButtonEnabled by rememberSaveable { mutableStateOf(true) }
 
 
     val pickImageLauncher = rememberLauncherForActivityResult(
@@ -135,12 +141,15 @@ fun UserScreen(
                     )
                     Button(
                         onClick = {
+                            isButtonEnabled = false
                             pickImageLauncher.launch(
                                 PickVisualMediaRequest (
                                     ActivityResultContracts.PickVisualMedia.ImageOnly
                                 )
                             )
+                            isButtonEnabled = true
                         },
+                        enabled = isButtonEnabled,
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = LittleLemonColor.primary2),
                         modifier = Modifier
@@ -151,8 +160,11 @@ fun UserScreen(
                     }
                     OutlinedButton(
                         onClick = {
+                            isButtonEnabled = false
                             viewModel.removeProfileImage()
+                            isButtonEnabled = true
                         },
+                        enabled = isButtonEnabled,
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Gray)
                     ) {
@@ -341,7 +353,10 @@ fun UserScreen(
                 // ************** LOWER PART BUTTONS SECTION ****************************
                 Button(
                     onClick = {
-                        viewModel.logout()
+                        coroutineScope.launch {
+                            val userDeletedId = viewModel.logout(context)
+                            navigateToOnBoarding(userDeletedId)
+                        }
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = LittleLemonColor.primary1),
                     shape = RoundedCornerShape(8.dp),

@@ -14,7 +14,7 @@ object HomeDestination : NavigationDestination {
 }
 
 
-object UserDestination : NavigationDestination {
+object ProfileDestination : NavigationDestination {
     override val route = "user"
     const val ARG_USER_ID = "userId"
     val routeWithArgs = "$route/{$ARG_USER_ID}"
