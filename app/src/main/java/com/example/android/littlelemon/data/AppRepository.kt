@@ -12,6 +12,9 @@ class AppRepository private constructor(context: Context) {
     suspend fun getUser(userId: Int) = database.userDao().getUser(userId)
     fun getUserStream(userId: Int) : Flow<User?> = database.userDao().getUserStream(userId)
 
+    suspend fun insert(menuItem: MenuItem) = database.menuItemDao().insert(menuItem)
+    fun getMenuItemsStream() : Flow<List<MenuItem>> = database.menuItemDao().getMenuItemsStream()
+
     companion object {
         private var INSTANCE: AppRepository? = null
 

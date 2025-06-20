@@ -9,9 +9,9 @@ val Categories = listOf(
 )
 
 enum class Category(val catName: String) {
-    STARTERS("Starters"),
-    MAINS("Mains"),
-    DESSERTS("Desserts"),
-    DRINKS("Drinks"),
-    ALL("All")
+    STARTERS("starters"),
+    MAINS("mains"),
+    DESSERTS("desserts"),
+    DRINKS("drinks"),
+    ALL("all")
 }
