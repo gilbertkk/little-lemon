@@ -7,9 +7,10 @@ import androidx.room.RoomDatabase
 
 private const val DATABASE_NAME = "app_database"
 
-@Database(entities = [User::class], version = 1, exportSchema = false)
+@Database(entities = [User::class, MenuItem::class], version = 1, exportSchema = false)
 abstract class AppDatabase: RoomDatabase() {
     abstract fun userDao(): UserDao
+    abstract fun menuItemDao(): MenuItemDao
 
     companion object {
         @Volatile

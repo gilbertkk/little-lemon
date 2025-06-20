@@ -50,11 +50,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import com.example.android.littlelemon.R
 import com.example.android.littlelemon.data.Categories
 import com.example.android.littlelemon.data.Category
-import com.example.android.littlelemon.data.Dish
-import com.example.android.littlelemon.data.dishes
 import com.example.android.littlelemon.ui.TopAppBar
 import com.example.android.littlelemon.ui.theme.LittleLemonColor
 import com.example.android.littlelemon.ui.theme.LittleLemonTextStyle
@@ -67,6 +66,10 @@ fun HomeScreen(
     viewModel: HomeViewModel = viewModel()
 ) {
     val userUiState by viewModel.userUiState.collectAsStateWithLifecycle()
+    val menuItems by viewModel.menuItemsStateFlow.collectAsStateWithLifecycle()
+    val menuUiItems = menuItems.map { it.toMenuUiItem() }
+
+    viewModel.homeUiState = HomeUiState(menuUiItems = menuUiItems)
 
     Scaffold(
         topBar = {
@@ -83,18 +86,20 @@ fun HomeScreen(
             .padding(paddingValues)
         ) {
             HomeScreenUpper (searchBar ={ AppSearchBar { searchWord ->
-                viewModel.dishList =
-                    dishes.filter { it.name.lowercase().contains(searchWord.trim().lowercase()) }
-                }
+                viewModel.homeUiState = HomeUiState(menuUiItems = menuUiItems.filter {
+                    it.title.contains(searchWord.trim(), ignoreCase = true) }
+                ) }
             })
             HomeScreenLower(
-                dishes = viewModel.dishList,
+                dishes = viewModel.homeUiState.menuUiItems,
                 categorizeDishes = {category ->
-                    viewModel.dishList = if (category == "All") {
-                        dishes
+                    if (category == Category.ALL.catName) {
+                        viewModel.homeUiState = HomeUiState(menuUiItems = menuUiItems)
                     } else {
-                        dishes.filter {
-                            it.category.catName == category }
+                        val filteredList = menuUiItems.filter {
+                            it.category.contains(category.trim(), ignoreCase = true)
+                        }
+                        viewModel.homeUiState = HomeUiState(menuUiItems = filteredList)
                     }
                 })
         }
@@ -185,7 +190,7 @@ fun AppSearchBar(onSearch: (search: String) -> Unit) {
 }
 
 @Composable
-fun HomeScreenLower(dishes: List<Dish>, categorizeDishes: (String) -> Unit) {
+fun HomeScreenLower(dishes: List<MenuUiItem>, categorizeDishes: (String) -> Unit) {
     Column(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start,
@@ -209,10 +214,20 @@ fun HomeScreenLower(dishes: List<Dish>, categorizeDishes: (String) -> Unit) {
             color = Color.Gray,
             thickness = 1.dp
         )
-        LazyColumn {
-            items(dishes) { dish ->
-                MenuDish(dish)
+        if (dishes.isNotEmpty()) {
+            LazyColumn {
+                items(dishes) { dish ->
+                    MenuDish(dish)
+                }
             }
+        } else {
+            Text(
+                text = "Coming soon!",
+                style = LittleLemonTextStyle.sectionTitle,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .align(Alignment.CenterHorizontally)
+            )
         }
     }
 }
@@ -233,7 +248,7 @@ fun MenuCategory(category: Category, onClick: (String) -> Unit) {
 }
 
 @Composable
-fun MenuDish(dish: Dish) {
+fun MenuDish(dish: MenuUiItem) {
     Card (
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ){
@@ -244,7 +259,7 @@ fun MenuDish(dish: Dish) {
                 .padding(8.dp)
         ) {
             Column {
-                Text(text = dish.name, style = LittleLemonTextStyle.cardTitle)
+                Text(text = dish.title, style = LittleLemonTextStyle.cardTitle)
                 Text(
                     text = dish.description,
                     style = LittleLemonTextStyle.leadText,
@@ -260,9 +275,9 @@ fun MenuDish(dish: Dish) {
                     style = LittleLemonTextStyle.highLightText
                 )
             }
-            Image(
-                painter = painterResource(id = dish.image),
-                contentDescription = dish.name + " image."
+            AsyncImage(
+                model = dish.image,
+                contentDescription = dish.title + " image."
             )
         }
     }
