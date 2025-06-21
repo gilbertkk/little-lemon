@@ -93,14 +93,7 @@ fun HomeScreen(
             HomeScreenLower(
                 dishes = viewModel.homeUiState.menuUiItems,
                 categorizeDishes = {category ->
-                    if (category == Category.ALL.catName) {
-                        viewModel.homeUiState = HomeUiState(menuUiItems = menuUiItems)
-                    } else {
-                        val filteredList = menuUiItems.filter {
-                            it.category.contains(category.trim(), ignoreCase = true)
-                        }
-                        viewModel.homeUiState = HomeUiState(menuUiItems = filteredList)
-                    }
+                    viewModel.categorizeMenuItems(category, menuUiItems)
                 })
         }
     }
@@ -172,7 +165,11 @@ fun AppSearchBar(onSearch: (search: String) -> Unit) {
     ) {
         OutlinedTextField (
             value = searchInput,
-            onValueChange = { searchInput = it },
+            onValueChange = {
+                searchInput = it
+                onSearch(searchInput)
+            },
+            placeholder = { Text(text = stringResource(R.string.home_screen_search_bar_placeholder))},
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(
                 onDone = {
@@ -222,7 +219,7 @@ fun HomeScreenLower(dishes: List<MenuUiItem>, categorizeDishes: (String) -> Unit
             }
         } else {
             Text(
-                text = "Coming soon!",
+                text = stringResource(R.string.home_screen_no_corresponding_dishes),
                 style = LittleLemonTextStyle.sectionTitle,
                 modifier = Modifier
                     .padding(16.dp)

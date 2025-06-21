@@ -6,6 +6,8 @@
         focused on traditional recipes served with a modern twist.</string>
     <string name="home_screen_hero_image_description">Hero Image</string>
     <string name="home_screen_section_title">Order for delivery!</string>
+    <string name="home_screen_search_bar_placeholder">Enter Search Phrase</string>
+    <string name="home_screen_no_corresponding_dishes">No corresponding dishes matching your search</string>
     <string name="onboarding_text_welcoming">Let\'s get to know you</string>
     <string name="onboarding_personal_info">Personal information</string>
     <string name="onboarding_firstname">First Name *</string>
