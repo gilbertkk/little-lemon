@@ -7,6 +7,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.android.littlelemon.data.AppRepository
+import com.example.android.littlelemon.data.Category
 import com.example.android.littlelemon.data.MenuItem
 import com.example.android.littlelemon.ui.navigation.HomeDestination
 import com.example.android.littlelemon.ui.profile.UserUiState
@@ -45,6 +46,17 @@ class HomeViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
                     }
                 }
             }
+        }
+    }
+
+    fun categorizeMenuItems(searchPhrase: String, menuUiItems: List<MenuUiItem>) {
+        if (searchPhrase == Category.ALL.catName) {
+            homeUiState = HomeUiState(menuUiItems = menuUiItems)
+        } else {
+            val filteredList = menuUiItems.filter {
+                it.category.contains(searchPhrase.trim(), ignoreCase = true)
+            }
+            homeUiState = HomeUiState(menuUiItems = filteredList)
         }
     }
 }
